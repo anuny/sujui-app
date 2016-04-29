@@ -16,10 +16,10 @@
 >app.define(id,factory,type);
 >
 id : string 模块名 ，如 'core';
-  
-  factory : function 回调函数，即这个模块要实现的功能
-  
-  type : boolean 设置模块可覆盖,设置为true后,后面定义的模块会覆盖之前的，否则定义不会生效
+>
+factory : function 回调函数，即这个模块要实现的功能
+>
+type : boolean 设置模块可覆盖,设置为true后,后面定义的模块会覆盖之前的，否则定义不会生效
 
 ```javascript 
 
@@ -54,7 +54,9 @@ app.define('core',function(require){
 
 使用一个模块
 >app.use(id,factory);
+>
 id  : 之前用define定义的模块名
+>
 factory : 回调函数，即这个模块要实现的功能
 
 ```javascript 
@@ -82,6 +84,7 @@ app.use(['extend://dom','plugins://slider'],function($,slider){
 
 全局调用一个模块
 >app.require(id);
+>
 id  : 之前用define定义的模块名
 
 
@@ -110,6 +113,7 @@ console.log(app.mod2) //return 2
 
 使用缓存模块
 >app.modules[id];
+>
 id  : 之前用define定义的模块名
 
 ```javascript 
