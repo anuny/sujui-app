@@ -13,13 +13,13 @@
 -------
 
 定义一个模块
->app.define(id,factory,type);
+>app.define(id,factory,cover);
 >
 id : string 模块名 ，如 'core';
 >
 factory : function 回调函数，即这个模块要实现的功能
 >
-type : boolean 设置模块可覆盖,设置为true后,后面定义的模块会覆盖之前的，否则定义不会生效
+cover : boolean 设置模块可覆盖,设置为true后,后面定义的模块会覆盖之前的，否则定义不会生效
 
 ```javascript 
 
@@ -30,9 +30,9 @@ app.define('test');
 //demo2:
 
 /**
- * 定义一个标准的模块,取名为core
+ * 定义一个标准的模块
  */
-app.define('core',function(require){
+app.define('core',function(require,exports,module){
     
 	//依赖模块的两种方法
 	
@@ -42,9 +42,54 @@ app.define('core',function(require){
 	var $=app.require('dom')
 	
  	var a=1;
-
- 	// 返回模块:
+ 	
+ 	//返回的两种方法
+ 	
+ 	//1:使用 exports导出模块
+ 	exports.core=a
+ 	
+ 	// 2返回模块:
  	return a
+});
+
+
+/**
+ * 定义一个数据模块
+ */
+app.define('data',[1,2,3,4....]);
+
+/**
+ * 定义一个对象模块
+ */
+app.define('object',{a:1,b:2,c:3});
+
+
+/**
+ * 覆盖一个模块
+ */
+app.define('test',function(require,exports,module){
+ 	return 1
+});
+
+app.use('test',function(test){
+ 	console.log(test) // return 1
+});
+
+app.define('test',function(require,exports,module){
+ 	return 2
+});
+
+app.use('test',function(test){
+ 	console.log(test) // return 1
+});
+
+
+app.define('test',function(require,exports,module){
+ 	return 2
+},true);
+
+app.use('test',function(test){
+ 	console.log(test) // return 2
 });
 
 
