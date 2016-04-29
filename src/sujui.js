@@ -1,13 +1,9 @@
 (function(w, undefined) {
 	var app = new Object;
-	app.modules  = {};
-	app.modules.prototype = app.modules;
-	app.extend = app.modules.extend = function(module) {
-		var i = 0,
-		target = this,
-		deep = false,
-		length = arguments.length,
-		obj, empty, items, x;
+	app.version = '0.0.1';
+	app.modules = {};
+	app.extend = function(module) {
+		var i = 0,target = this,deep = false,length = arguments.length,obj, empty, items, x;
 		typeof arguments[0] === 'boolean' ? (deep = true, i = 1, length > 2 ? (i = 2, target = arguments[1]) : void 0) : (length > 1 ? (i = 1, target = arguments[0]) : void 0);
 		for (x = i; x < length; x++) {
 			obj = arguments[x];
@@ -19,20 +15,20 @@
 		};
 		return target
 	};
-	app.version = '0.0.1';
-	app.use = function(module, fn) {
-		var type=function(val) {return null == val ? val + "": Array == val.constructor ? "array": typeof val};
-		module=type(module)==='array'?module:[module];
-		var exports=[];
-		for(var i=0;i<module.length;i++)exports[i]=app.modules[module[i]];
-		fn&&fn.apply(app, exports);
-	};
-	app.require = function(module) {
-		var exports=app.modules[module];
-		return exports
-	};
-	app.define = function(module, fn) {
-		return app.modules[module] = fn(app.require)
-	};
+	app.extend({
+		define : function(id, fn ,type) {
+			var err="module:[" + id + "] already defined";
+			return app.modules[id]=app.modules[id]?(type?fn(app.require):((w.console?console.warn(err):alert(err)),app.modules[id])):fn(app.require);
+		},
+		require : function(id) {
+			return app.modules[id]
+		},
+		use : function(id, fn) {
+			var exports = [];
+			id = Array == id.constructor? id: [id];
+			for (var i = 0; i < id.length; i++) exports[i] = app.modules[id[i]];
+			fn && fn.apply(app, exports)
+		}
+	});
 	w.app = w.APP = app
 })(window);
