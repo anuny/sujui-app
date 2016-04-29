@@ -72,7 +72,7 @@ app.define('test',function(require,exports,module){
 });
 
 app.use('test',function(test){
- 	console.log(test) // return 1
+ 	console.log(test) // 1
 });
 
 app.define('test',function(require,exports,module){
@@ -80,7 +80,7 @@ app.define('test',function(require,exports,module){
 });
 
 app.use('test',function(test){
- 	console.log(test) // return 1
+ 	console.log(test) // 1
 });
 
 
@@ -89,7 +89,7 @@ app.define('test',function(require,exports,module){
 },true);
 
 app.use('test',function(test){
- 	console.log(test) // return 2
+ 	console.log(test) // 2
 });
 
 
@@ -137,7 +137,7 @@ id  : 之前用define定义的模块名
 
 // 调用core模块将返回 1
 var a = app.require('core'); 
-console.log(a);// return 1
+console.log(a);// 1
 
 ```
 
@@ -150,8 +150,8 @@ app.extend({
     mod2:2
 });
 
-console.log(app.mod1) //return 1
-console.log(app.mod2) //return 2
+console.log(app.mod1) // 1
+console.log(app.mod2) // 2
 
 
 ```
