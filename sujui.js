@@ -1,7 +1,6 @@
 (function(w, undefined) {
 	var app = new Object;
-	app.modules  = {
-	};
+	app.modules  = {};
 	app.modules.prototype = app.modules;
 	app.extend = app.modules.extend = function(module) {
 		var i = 0,
