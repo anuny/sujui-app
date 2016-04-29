@@ -103,6 +103,18 @@ console.log(app.mod2) //return 2
 
 
 ```
+
+使用缓存模块
+>app.modules[id];
+id  : 之前用define定义的模块名
+
+```javascript 
+
+var $=app.modules['extend://dom']
+console.log($('#test'))
+
+
+```
  综合应用
 
 ```javascript
