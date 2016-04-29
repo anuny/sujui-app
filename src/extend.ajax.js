@@ -38,3 +38,4 @@ app.define('extend://ajax',function() {
 	};
 	return ajax
 })
+
