@@ -14,9 +14,12 @@
 
 定义一个模块
 >app.define(id,factory,type);
-id : string 模块名 ，如 'core';
-factory : function 回调函数，即这个模块要实现的功能
-type : boolean 设置模块可覆盖,设置为true后,后面定义的模块会覆盖之前的，否则定义不会生效
+  
+  id : string 模块名 ，如 'core';
+  
+  factory : function 回调函数，即这个模块要实现的功能
+  
+  type : boolean 设置模块可覆盖,设置为true后,后面定义的模块会覆盖之前的，否则定义不会生效
 
 ```javascript 
 
