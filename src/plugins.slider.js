@@ -1,7 +1,14 @@
 app.define('plugins://slider',function(require) {
 	function slider(options) {
-		var $= require('extend://dom')
-		var sliderMain = $(options.element);
+		var $= require('extend://dom'),
+		defaultOptions={
+			element:'#slider',
+			type:'fade',
+			bind:'onmouseover',
+			speed:3000
+		},
+		options=options||{};
+		var sliderMain = $(options.element||defaultOptions.element);
 		if (sliderMain.length===0) return;
 		var sliderBox = sliderMain.find('ul'),
 		sliderItem = sliderBox.find('li');
@@ -19,7 +26,7 @@ app.define('plugins://slider',function(require) {
 		prevIndex = 0,
 		fixHTML = '';
 		countItem.each(function(i){
-			this[options.bind || 'onmouseover']= function() {
+			this[options.bind || defaultOptions.bind]= function() {
 				show(i);
 				sliderFix[0].innerHTML = sliderItem[prevIndex].innerHTML;
 				fade(sliderFix[0], 100);
@@ -48,7 +55,7 @@ app.define('plugins://slider',function(require) {
 				show(index);
 				prevIndex = index
 			},
-			options.speed || 2000)
+			options.speed || defaultOptions.speed)
 		};
 		autoPlay();
 		function show(index) {
@@ -66,7 +73,7 @@ app.define('plugins://slider',function(require) {
 				fade(sliderItem[index], opacityMin);
 				opacityMin == 100 && clearInterval(timer)
 			},
-			20)
+			10)
 		}
 	};
 	return slider
