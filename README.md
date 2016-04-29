@@ -1,7 +1,8 @@
-# sujui-app
+###sujui app
+
 ===========
 
-简化版的前端模块化框架(II)
+简化版的前端模块化框架
 
 -------
 说明：
@@ -12,28 +13,28 @@
 -------
 
 定义一个模块
->define(id,factory);
+>app.define(id,factory);
 id : 模块名 ，如 'core';
 factory : 回调函数，即这个模块要实现的功能
 
 ```javascript 
 
 //demo1:
-定义一个空的模块 , 没有任何意思。
-define('test');
+//定义一个空的模块 , 没有任何意思。
+app.define('test');
 
 //demo2:
 
 /**
  * 定义一个标准的模块,取名为core
  */
-define('core',function(require){
-	
+app.define('core',function(require){
+    
 	//依赖模块的两种方法
 	
-	调用内部方法
+	//调用内部方法
 	var $=require('dom')
-	或者调用全局方法
+	//或者调用全局方法
 	var $=app.require('dom')
 	
  	var a=1;
@@ -42,18 +43,6 @@ define('core',function(require){
  	return a
 });
 
-```
-
-全局调用一个模块
->app.require(id);
-id  : 之前用define定义的模块名
-
-
-```javascript 
-//demo3:
-// 调用test模块将返回 undefined
-var a = app.require('core'); 
-console.log(a);// return 1
 
 
 
@@ -64,6 +53,7 @@ console.log(a);// return 1
 id  : 之前用define定义的模块名
 factory : 回调函数，即这个模块要实现的功能
 
+```javascript 
 //demo 1
 
 app.use('extend://dom',function($){
@@ -81,33 +71,60 @@ app.use(['extend://dom','plugins://slider'],function($,slider){
 })
 
 
+
+```
+
+
+
+全局调用一个模块
+>app.require(id);
+id  : 之前用define定义的模块名
+
+
 ```javascript 
 
-// 
+// 调用core模块将返回 1
 var a = app.require('core'); 
 console.log(a);// return 1
 
+```
 
+扩展APP静态方法
+>app.extend({});
 
-//综合应用
-//demo5:
+```javascript 
+app.extend({
+    mod1:1,
+    mod2:2
+});
 
-/**
- *  定义一个有依赖的模块
- */
-
-define('init',function(require,exports,module){
-	//依赖core
-	var core = require('core');
-	//下面就可以使用core模块了
-	console.log(core.name);
-})
+console.log(app.mod1) //return 1
+console.log(app.mod2) //return 2
 
 
 ```
-调用init模块
->require('init');
- 
+ 综合应用
+
+```javascript
+app.define('extend://dom',function(require) {
+    var dom=function(selector){
+        return document.getElementById(selector)
+    };
+    return dom;
+})
+
+
+app.use('extend://dom',function(dom) {
+    app.extend({
+        $:dom
+    });
+    
+    //app.$('test')
+})
+
+
+
+```
 
 优点：
 -------
