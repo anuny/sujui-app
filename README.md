@@ -14,8 +14,8 @@
 
 定义一个模块
 >app.define(id,factory,type);
-  
-  id : string 模块名 ，如 'core';
+>
+id : string 模块名 ，如 'core';
   
   factory : function 回调函数，即这个模块要实现的功能
   
