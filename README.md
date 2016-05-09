@@ -30,8 +30,87 @@
 sujui.core.js
 =========
 前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+```javascript 
 
+//定义一个模块
+app.define('demo://test',function(require,exports,module){
+	exports.test = 1
+})
+
+//使用一个模块
+app.use('demo://test',function(exports){
+	var test = exports.test //return 1
+})
+
+//全局加载模块
+var test = app.require(demo://test) //return 1
+
+//静态扩展
+app.extend({
+	test:test
+});
+app.test ////return 1
+
+//使用缓存模块
+var test=app.modules['demo://test'] //return 1
+
+```
 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+extend.dom.js
+=========
+类似jQuery，dom选择和操作
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+extend.ajax.js
+=========
+ajax插件
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+extend.cookie.js
+=========
+cookie 插件
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+extend.animate.js
+=========
+动画插件
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+extend.animate.tween.js
+=========
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+plugins.validator.js
+=========
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+plugins.layzr.js
+=========
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+plugins.router.js
+=========
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
+
+plugins.slider.js
+=========
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 
