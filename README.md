@@ -1,17 +1,6 @@
 开发资源总结 (持续整理中)
 =====================
 
-  * [gh-md-toc](#gh-md-toc)
-  * [Table of contents](#table-of-contents)
-  * [Installation](#installation)
-  * [Usage](#usage)
-    * [STDIN](#stdin)
-    * [Local files](#local-files)
-    * [Remote files](#remote-files)
-    * [Multiple files](#multiple-files)
-    * [Combo](#combo)
-  * [Tests](#tests)
-  * [Dependency](#dependency)
 
 > *就像开发一样, 这篇文档如果没有人关心和维护, 里面的内容就会变得老旧, 过时而不再具有参考价值. 所以, 我希望所有看到并喜欢这篇文档的人都一起来维护它. 放心大胆的提交 Pull Request 和 Issue 吧!!*
 
@@ -26,7 +15,7 @@
 
 
 
-+ sujui.core.js: 前端模块化管理`gzip 5kb` [源码](./src/sujui.core.js)[文档](./doc/sujui.core.md)
++ [sujui.core.js]: 前端模块化管理`gzip 5kb` [源码](./src/sujui.core.js)[文档](./doc/sujui.core.md)
 + extend.dom.js:  类似jQuery的选择器，`gzip 5kb` [源码](./src/sujui.dom.js)[文档](./doc/sujui.dom.md)
 + extend.ajax.js: ajax插件 `gzip 5kb` [源码](./src/sujui.ajax.js)[文档](./doc/sujui.ajax.md)
 + extend.cookie.js: cookie 插件`gzip 5kb` [源码](./src/sujui.cookie.js)[文档](./doc/sujui.cookie.md)
@@ -37,6 +26,9 @@
 + plugins.router.js: 前端路由插件`gzip 5kb` [源码](./src/sujui.router.js)[文档](./doc/sujui.router.md)
 + plugins.slider.js: 前端幻灯片插件`gzip 5kb` [源码](./src/sujui.slider.js)[文档](./doc/sujui.slider.md)
 
+
+sujui.core.js
+=========
 
 
 ## License
