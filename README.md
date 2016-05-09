@@ -13,20 +13,9 @@
 
 #### Javascript
 
-  * [gh-md-toc](#sujuicorejs)
-  * [Table of contents](#table-of-contents)
-  * [Installation](#installation)
-  * [Usage](#usage)
-    * [STDIN](#stdin)
-    * [Local files](#local-files)
-    * [Remote files](#remote-files)
-    * [Multiple files](#multiple-files)
-    * [Combo](#combo)
-  * [Tests](#tests)
-  * [Dependency](#dependency)
 
 
-  * [sujui.core.js]: 前端模块化管理`gzip 5kb` [源码](./src/sujui.core.js)[文档](./doc/sujui.core.md)
+  * [sujui.core.js](#sujuicorejs): 前端模块化管理`gzip 5kb` [源码](./src/sujui.core.js)[文档](./doc/sujui.core.md)
 + extend.dom.js:  类似jQuery的选择器，`gzip 5kb` [源码](./src/sujui.dom.js)[文档](./doc/sujui.dom.md)
 + extend.ajax.js: ajax插件 `gzip 5kb` [源码](./src/sujui.ajax.js)[文档](./doc/sujui.ajax.md)
 + extend.cookie.js: cookie 插件`gzip 5kb` [源码](./src/sujui.cookie.js)[文档](./doc/sujui.cookie.md)
