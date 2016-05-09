@@ -5,7 +5,7 @@
 
 sujui.core.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 ```javascript 
 
 //定义一个模块
@@ -36,7 +36,7 @@ var test = app.modules['demo://test'] //return 1
 
 extend.dom.js
 =========
-类似jQuery，dom选择和操作 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+类似jQuery，dom选择和操作 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 ```javascript 
 
 //选择器
@@ -58,7 +58,7 @@ API: `ready` `each` `find` `data` `eq` `first` `last` `append` `css` `hasClass` 
 
 extend.ajax.js
 =========
-ajax插件 [文档](./doc/extend.ajax.md)  [源码](./src/extend.ajax.js)  `gzip 5kb`
+ajax插件 [文档](./doc/extend.ajax.md)  [源码](./src/extend.ajax.js)  `5kb`
 ```javascript 
 
 //举个栗子
@@ -76,7 +76,7 @@ ajax({
 
 extend.cookie.js
 =========
-cookie 插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+cookie 插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 ```javascript 
 
 //举个栗子
@@ -88,7 +88,7 @@ cookie('test') //123456
 
 extend.animate.js
 =========
-动画插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+动画插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 ```javascript 
 
 animate('#test',{width:100,height:100},1000,function(){
@@ -105,7 +105,7 @@ $('#test').animate({width:100,height:100},1000,function(){
 
 extend.animate.tween.js
 =========
-动画增效插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+动画增效插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 ```javascript 
 var easeing=tween.Cubic.easeInOut
 $('#test').animate({width:100,height:100},1000,easeing,function(){
@@ -117,7 +117,7 @@ $('#test').animate({width:100,height:100},1000,easeing,function(){
 
 plugins.validator.js
 =========
-表单验证插件。 [文档](./doc/plugins.validator.md)  [源码](./src/plugins.validator.js)  `gzip 2kb`
+表单验证插件。 [文档](./doc/plugins.validator.md)  [源码](./src/plugins.validator.js)  `2kb`
 ```javascript 
 validator({
 	formId:'form-1',
@@ -139,19 +139,19 @@ validator({
 
 plugins.layzr.js
 =========
-页面图片懒加载插件。 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+页面图片懒加载插件。 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 
 
 
 plugins.router.js
 =========
-前端路由插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端路由插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 
 
 
 plugins.slider.js
 =========
-前端幻灯片插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端幻灯片插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 
 
 
@@ -160,12 +160,7 @@ plugins.slider.js
 ddd
 
 ## License
-
-<A NAME="ROP_ON_ARM">Davi L, Dmitrienko A, Sadeghi A R, et al. [Return-oriented programming without returns on ARM](http://www.trust.informatik.tu-darmstadt.de/fileadmin/user_upload/Group_TRUST/PubsPDF/ROP-without-Returns-on-ARM.pdf)[J]. System Security Lab-Ruhr University Bochum, Tech. Rep, 2010.</a>
-
-[![Creative Commons License](http://i.creativecommons.org/l/by/4.0/88x31.png)](http://creativecommons.org/licenses/by/4.0/)
-
-This work is licensed under a [Creative Commons Attribution 4.0 International License](http://creativecommons.org/licenses/by/4.0/).
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./MIT-LICENSE)
 
 
 ### 测试
