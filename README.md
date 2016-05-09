@@ -1,7 +1,7 @@
 前端轻量化插件 (持续造轮子中...)
 =====================
 
-> 杀鸡焉用牛刀，这些就够了！
+> 杀鸡焉用牛刀，这些就够了！[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./LICENSE)
 
 sujui.core.js
 =========
@@ -153,14 +153,3 @@ plugins.slider.js
 =========
 前端幻灯片插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `5kb`
 
-
-
-
-
-ddd
-
-## License
-[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./LICENSE)
-
-
-### 测试
