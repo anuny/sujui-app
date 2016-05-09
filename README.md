@@ -1,7 +1,7 @@
 开发资源总结 (持续整理中)
 =====================
 
-
+[TOC]
 
 > *就像开发一样, 这篇文档如果没有人关心和维护, 里面的内容就会变得老旧, 过时而不再具有参考价值. 所以, 我希望所有看到并喜欢这篇文档的人都一起来维护它. 放心大胆的提交 Pull Request 和 Issue 吧!!*
 
@@ -14,7 +14,7 @@
 
 #### Javascript
 
-[TOC]
+
 
 + sujui.core.js: 前端模块化管理`gzip 5kb` [源码](./src/sujui.core.js)[文档](./doc/sujui.core.md)
 + extend.dom.js:  类似jQuery的选择器，`gzip 5kb` [源码](./src/sujui.dom.js)[文档](./doc/sujui.dom.md)
