@@ -29,6 +29,12 @@
 
 sujui.core.js
 =========
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+-------
+[English Version](./doc/validator.md)
+
+
+
 ddd
 
 ## License
