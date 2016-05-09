@@ -1,5 +1,4 @@
 # 欢迎使用 sujui.validator 表单验证插件
-------
 轻量级前端表单验证插件
 `GZIP 2kb`
 
