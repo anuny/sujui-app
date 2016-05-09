@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Sujui.app by anuny</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Sujui.app</h1>
+      <h2 class="project-tagline"></h2>
+      <a href="https://github.com/anuny/sujui.app" class="btn">View on GitHub</a>
+      <a href="https://github.com/anuny/sujui.app/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/anuny/sujui.app/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="前端轻量化插件-持续造轮子中" class="anchor" href="#%E5%89%8D%E7%AB%AF%E8%BD%BB%E9%87%8F%E5%8C%96%E6%8F%92%E4%BB%B6-%E6%8C%81%E7%BB%AD%E9%80%A0%E8%BD%AE%E5%AD%90%E4%B8%AD" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>前端轻量化插件 (持续造轮子中...)</h1>
+
+<blockquote>
+<p>杀鸡焉用牛刀，这些就够了！</p>
+</blockquote>
+
+<p><a href="./LICENSE"><img src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat" alt="license"></a></p>
+
+<h1>
+<a id="sujuicorejs" class="anchor" href="#sujuicorejs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>sujui.core.js</h1>
+
+<p>前端模块化管理,移除了模块的url加载处理,简化了模块的调用。<a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<div class="highlight highlight-source-js"><pre>
+<span class="pl-c">//定义一个模块</span>
+<span class="pl-smi">app</span>.<span class="pl-en">define</span>(<span class="pl-s"><span class="pl-pds">'</span>demo://test<span class="pl-pds">'</span></span>,<span class="pl-k">function</span>(<span class="pl-smi">require</span>,<span class="pl-c1">exports</span>,<span class="pl-c1">module</span>){
+    <span class="pl-c1">exports</span>.<span class="pl-smi">test</span> <span class="pl-k">=</span> <span class="pl-c1">1</span>
+})
+
+<span class="pl-c">//使用一个模块</span>
+<span class="pl-smi">app</span>.<span class="pl-en">use</span>(<span class="pl-s"><span class="pl-pds">'</span>demo://test<span class="pl-pds">'</span></span>,<span class="pl-k">function</span>(<span class="pl-c1">exports</span>){
+    <span class="pl-k">var</span> test <span class="pl-k">=</span> <span class="pl-c1">exports</span>.<span class="pl-smi">test</span> <span class="pl-c">//return 1</span>
+})
+
+<span class="pl-c">//全局加载模块</span>
+<span class="pl-k">var</span> test <span class="pl-k">=</span> <span class="pl-smi">app</span>.<span class="pl-en">require</span>(demo<span class="pl-k">:</span><span class="pl-c">//test) //return 1</span>
+
+<span class="pl-c">//静态扩展</span>
+<span class="pl-smi">app</span>.<span class="pl-en">extend</span>({
+    test<span class="pl-k">:</span>test
+});
+<span class="pl-k">var</span> test <span class="pl-k">=</span> <span class="pl-smi">app</span>.<span class="pl-smi">test</span> <span class="pl-c">//return 1</span>
+
+<span class="pl-c">//使用缓存模块</span>
+<span class="pl-k">var</span> test <span class="pl-k">=</span> <span class="pl-smi">app</span>.<span class="pl-smi">modules</span>[<span class="pl-s"><span class="pl-pds">'</span>demo://test<span class="pl-pds">'</span></span>] <span class="pl-c">//return 1</span>
+</pre></div>
+
+<h1>
+<a id="extenddomjs" class="anchor" href="#extenddomjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>extend.dom.js</h1>
+
+<p>类似jQuery，dom选择和操作 <a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<div class="highlight highlight-source-js"><pre>
+<span class="pl-c">//选择器</span>
+<span class="pl-en">dom</span>(<span class="pl-s"><span class="pl-pds">'</span>#demo<span class="pl-pds">'</span></span>)
+<span class="pl-en">dom</span>(<span class="pl-s"><span class="pl-pds">'</span>#demo .test<span class="pl-pds">'</span></span>)
+<span class="pl-en">dom</span>(<span class="pl-s"><span class="pl-pds">'</span>#demo .test li<span class="pl-pds">'</span></span>)
+<span class="pl-en">dom</span>(<span class="pl-s"><span class="pl-pds">'</span>#demo<span class="pl-pds">'</span></span>).<span class="pl-c1">find</span>(<span class="pl-s"><span class="pl-pds">'</span>.test<span class="pl-pds">'</span></span>)
+<span class="pl-en">dom</span>(<span class="pl-s"><span class="pl-pds">'</span>#demo<span class="pl-pds">'</span></span>).<span class="pl-c1">find</span>(<span class="pl-s"><span class="pl-pds">'</span>.test li<span class="pl-pds">'</span></span>).<span class="pl-en">first</span>()
+<span class="pl-en">dom</span>(<span class="pl-s"><span class="pl-pds">'</span>#demo<span class="pl-pds">'</span></span>).<span class="pl-c1">find</span>(<span class="pl-s"><span class="pl-pds">'</span>.test li<span class="pl-pds">'</span></span>).<span class="pl-en">eq</span>(<span class="pl-c1">1</span>)
+<span class="pl-k">...</span>.
+</pre></div>
+
+<p>API: <code>ready</code> <code>each</code> <code>find</code> <code>data</code> <code>eq</code> <code>first</code> <code>last</code> <code>append</code> <code>css</code> <code>hasClass</code>  <code>addClass</code>  <code>removeClass</code>  <code>attr</code>  <code>html</code>  <code>text</code>  <code>val</code></p>
+
+<p>可按需扩展</p>
+
+<h1>
+<a id="extendajaxjs" class="anchor" href="#extendajaxjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>extend.ajax.js</h1>
+
+<p>ajax插件 <a href="./doc/extend.ajax.md">文档</a>  <a href="./src/extend.ajax.js">源码</a>  <code>5kb</code></p>
+
+<div class="highlight highlight-source-js"><pre>
+<span class="pl-c">//举个栗子</span>
+
+<span class="pl-en">ajax</span>({
+    type<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>POST<span class="pl-pds">'</span></span>,
+    url<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>api.json<span class="pl-pds">'</span></span>,
+    async<span class="pl-k">:</span><span class="pl-c1">true</span>,
+    <span class="pl-en">success</span><span class="pl-k">:</span><span class="pl-k">function</span>(<span class="pl-smi">ret</span>){},
+    <span class="pl-en">error</span><span class="pl-k">:</span><span class="pl-k">function</span>(){}
+})
+</pre></div>
+
+<h1>
+<a id="extendcookiejs" class="anchor" href="#extendcookiejs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>extend.cookie.js</h1>
+
+<p>cookie 插件 <a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<div class="highlight highlight-source-js"><pre>
+<span class="pl-c">//举个栗子</span>
+<span class="pl-en">cookie</span>(<span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>,<span class="pl-s"><span class="pl-pds">'</span>123456<span class="pl-pds">'</span></span>,<span class="pl-c1">30</span>)
+<span class="pl-en">cookie</span>(<span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>) <span class="pl-c">//123456</span>
+</pre></div>
+
+<h1>
+<a id="extendanimatejs" class="anchor" href="#extendanimatejs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>extend.animate.js</h1>
+
+<p>动画插件 <a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<div class="highlight highlight-source-js"><pre>
+<span class="pl-en">animate</span>(<span class="pl-s"><span class="pl-pds">'</span>#test<span class="pl-pds">'</span></span>,{width<span class="pl-k">:</span><span class="pl-c1">100</span>,height<span class="pl-k">:</span><span class="pl-c1">100</span>},<span class="pl-c1">1000</span>,<span class="pl-k">function</span>(){
+ <span class="pl-k">...</span>
+})
+
+<span class="pl-c">//依赖extend.dom.js</span>
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#test<span class="pl-pds">'</span></span>).<span class="pl-en">animate</span>({width<span class="pl-k">:</span><span class="pl-c1">100</span>,height<span class="pl-k">:</span><span class="pl-c1">100</span>},<span class="pl-c1">1000</span>,<span class="pl-k">function</span>(){
+ <span class="pl-k">...</span>
+})
+</pre></div>
+
+<h1>
+<a id="extendanimatetweenjs" class="anchor" href="#extendanimatetweenjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>extend.animate.tween.js</h1>
+
+<p>动画增效插件。<a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">var</span> easeing<span class="pl-k">=</span><span class="pl-smi">tween</span>.<span class="pl-smi">Cubic</span>.<span class="pl-smi">easeInOut</span>
+<span class="pl-en">$</span>(<span class="pl-s"><span class="pl-pds">'</span>#test<span class="pl-pds">'</span></span>).<span class="pl-en">animate</span>({width<span class="pl-k">:</span><span class="pl-c1">100</span>,height<span class="pl-k">:</span><span class="pl-c1">100</span>},<span class="pl-c1">1000</span>,easeing,<span class="pl-k">function</span>(){
+ <span class="pl-k">...</span>
+})
+</pre></div>
+
+<h1>
+<a id="pluginsvalidatorjs" class="anchor" href="#pluginsvalidatorjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>plugins.validator.js</h1>
+
+<p>表单验证插件。 <a href="./doc/plugins.validator.md">文档</a>  <a href="./src/plugins.validator.js">源码</a>  <code>2kb</code></p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-en">validator</span>({
+    formId<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>form-1<span class="pl-pds">'</span></span>,
+    rules<span class="pl-k">:</span>{
+        username<span class="pl-k">:</span>{
+            label    <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>用户名<span class="pl-pds">'</span></span>,
+            Default  <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>请填写{label}<span class="pl-pds">'</span></span>,
+            Required <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>{label}不能为空<span class="pl-pds">'</span></span>,
+            Focus    <span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>请填写{label}<span class="pl-pds">'</span></span>,
+            Length   <span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>min<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-c1">6</span>,<span class="pl-s"><span class="pl-pds">'</span>max<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-c1">12</span>,<span class="pl-s"><span class="pl-pds">'</span>msg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>{label}不能小于{min}位,不能大于{max}位<span class="pl-pds">'</span></span>},
+            Regexp   <span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>reg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-sr"><span class="pl-pds">/</span><span class="pl-k">^</span><span class="pl-c1">\w</span><span class="pl-k">+</span><span class="pl-k">$</span><span class="pl-pds">/</span></span>, <span class="pl-s"><span class="pl-pds">'</span>compare<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-c1">false</span>, <span class="pl-s"><span class="pl-pds">'</span>msg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>{label}只能由数字、字母和下划线组成<span class="pl-pds">"</span></span>},
+            Ajax     <span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>url<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>ajax.php<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>reg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>!==<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>msg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>{label}已经存在<span class="pl-pds">"</span></span>},
+            Callback <span class="pl-k">:</span> {<span class="pl-s"><span class="pl-pds">'</span>fun<span class="pl-pds">'</span></span><span class="pl-k">:</span>{}, <span class="pl-s"><span class="pl-pds">'</span>msg<span class="pl-pds">'</span></span><span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">"</span>{label}不能是6位数字，请另换一个<span class="pl-pds">"</span></span>}
+        }
+})
+</pre></div>
+
+<h1>
+<a id="pluginslayzrjs" class="anchor" href="#pluginslayzrjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>plugins.layzr.js</h1>
+
+<p>页面图片懒加载插件。 <a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<h1>
+<a id="pluginsrouterjs" class="anchor" href="#pluginsrouterjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>plugins.router.js</h1>
+
+<p>前端路由插件。<a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+<h1>
+<a id="pluginssliderjs" class="anchor" href="#pluginssliderjs" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>plugins.slider.js</h1>
+
+<p>前端幻灯片插件。<a href="./doc/validator.md">文档</a>  <a href="./doc/validator.md">源码</a>  <code>5kb</code></p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/anuny/sujui.app">Sujui.app</a> is maintained by <a href="https://github.com/anuny">anuny</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
