@@ -1,7 +1,17 @@
 开发资源总结 (持续整理中)
 =====================
 
-[TOC]
+  * [gh-md-toc](#gh-md-toc)
+  * [Table of contents](#table-of-contents)
+  * [Installation](#installation)
+  * [Usage](#usage)
+    * [STDIN](#stdin)
+    * [Local files](#local-files)
+    * [Remote files](#remote-files)
+    * [Multiple files](#multiple-files)
+    * [Combo](#combo)
+  * [Tests](#tests)
+  * [Dependency](#dependency)
 
 > *就像开发一样, 这篇文档如果没有人关心和维护, 里面的内容就会变得老旧, 过时而不再具有参考价值. 所以, 我希望所有看到并喜欢这篇文档的人都一起来维护它. 放心大胆的提交 Pull Request 和 Issue 吧!!*
 
