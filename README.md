@@ -4,6 +4,8 @@
 
 简化版的前端模块化框架
 
+[English Version](./doc/validator.md)
+
 -------
 说明：
    移除了模块的url加载处理
