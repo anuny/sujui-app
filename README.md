@@ -13,7 +13,7 @@
 
 #### Javascript
 
-  * [gh-md-toc](#sujui.core.js)
+  * [gh-md-toc](#sujuicorejs)
   * [Table of contents](#table-of-contents)
   * [Installation](#installation)
   * [Usage](#usage)
