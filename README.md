@@ -13,6 +13,17 @@
 
 #### Javascript
 
+  * [gh-md-toc](#sujui.core.js)
+  * [Table of contents](#table-of-contents)
+  * [Installation](#installation)
+  * [Usage](#usage)
+    * [STDIN](#stdin)
+    * [Local files](#local-files)
+    * [Remote files](#remote-files)
+    * [Multiple files](#multiple-files)
+    * [Combo](#combo)
+  * [Tests](#tests)
+  * [Dependency](#dependency)
 
 
   * [sujui.core.js]: 前端模块化管理`gzip 5kb` [源码](./src/sujui.core.js)[文档](./doc/sujui.core.md)
