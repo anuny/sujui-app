@@ -160,7 +160,7 @@ plugins.slider.js
 ddd
 
 ## License
-[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./MIT-LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./LICENSE)
 
 
 ### 测试
