@@ -29,7 +29,7 @@
 
 sujui.core.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
 ```javascript 
 
 //定义一个模块
@@ -49,67 +49,83 @@ var test = app.require(demo://test) //return 1
 app.extend({
 	test:test
 });
-app.test ////return 1
+var test = app.test //return 1
 
 //使用缓存模块
-var test=app.modules['demo://test'] //return 1
+var test = app.modules['demo://test'] //return 1
 
 ```
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 extend.dom.js
 =========
-类似jQuery，dom选择和操作
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+类似jQuery，dom选择和操作 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+```javascript 
+
+//选择器
+dom('#demo')
+dom('#demo .test')
+dom('#demo .test li')
+dom('#demo').find('.test')
+dom('#demo').find('.test li').first()
+dom('#demo').find('.test li').eq(1)
+....
+
+```
+API: `ready` `each` `find` `data` `eq` `first` `last` `append` `css` `hasClass`  `addClass`  `removeClass`  `attr`  `html`  `text`  `val`
+
+可按需扩展
+
+
 
 
 extend.ajax.js
 =========
-ajax插件
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+ajax插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 extend.cookie.js
 =========
-cookie 插件
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+cookie 插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 extend.animate.js
 =========
-动画插件
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+动画插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 extend.animate.tween.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 plugins.validator.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 plugins.layzr.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 plugins.router.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 plugins.slider.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用
-[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+
 
 
 
