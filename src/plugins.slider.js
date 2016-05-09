@@ -1,4 +1,4 @@
-app.define('plugins://slider',function(require) {
+app.define('plugins://slider',function(require,exports,module) {
 	function slider(options) {
 		var $= require('extend://dom'),
 		defaultOptions={

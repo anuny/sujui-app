@@ -1,4 +1,4 @@
-###sujui app
+#sujui app
 
 ===========
 
@@ -9,8 +9,8 @@
    移除了模块的url加载处理
    简化了模块的调用
 
-用法
--------
+基本用法
+----
 
 定义一个模块
 >app.define(id,factory,cover);
@@ -98,6 +98,7 @@ app.use('test',function(test){
 ```
 
 使用一个模块
+----
 >app.use(id,factory);
 >
 id  : 之前用define定义的模块名
@@ -128,6 +129,7 @@ app.use(['extend://dom','plugins://slider'],function($,slider){
 
 
 全局调用一个模块
+----
 >app.require(id);
 >
 id  : 之前用define定义的模块名
@@ -142,6 +144,7 @@ console.log(a);// 1
 ```
 
 扩展APP静态方法
+----
 >app.extend({});
 
 ```javascript 
@@ -157,6 +160,7 @@ console.log(app.mod2) // 2
 ```
 
 使用缓存模块
+----
 >app.modules[id];
 >
 id  : 之前用define定义的模块名
@@ -168,7 +172,8 @@ console.log($('#test'))
 
 
 ```
- 综合应用
+综合应用
+----
 
 ```javascript
 app.define('extend://dom',function(require) {

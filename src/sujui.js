@@ -40,10 +40,9 @@
 			return app.modules[id]
 		},
 		use: function(id, factory) {
-			var exports = [],cached = cache[id],i = 0,x,length = id.length;
-			id = isAarray(id) ? id: [id];
-			for (x = i; x < length; x++) exports[i] = isEmptyObject(cached) ? app.modules[id[i]] : [cached][0];
-			factory && factory.apply(app, exports)
+			var exports = [],cached = cache[id],i = 0,id = isAarray(id) ? id: [id],length = id.length;
+			for (; i < length; i++) (exports[i] = isEmptyObject(cached) ? app.modules[id[i]] : [cached][0]);
+			isFunction(factory) && factory.apply(app, exports)
 		}
 	});
 	w.app = w.APP = app
