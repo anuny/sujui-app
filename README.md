@@ -82,32 +82,83 @@ API: `ready` `each` `find` `data` `eq` `first` `last` `append` `css` `hasClass` 
 
 extend.ajax.js
 =========
-ajax插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+ajax插件 [文档](./doc/extend.ajax.md)  [源码](./src/extend.ajax.js)  `gzip 5kb`
+```javascript 
 
+//举个栗子
+
+ajax({
+	type:'POST',
+	url:'api.json',
+	async:true,
+	success:function(ret){},
+	error:function(){}
+})
+
+```
 
 
 extend.cookie.js
 =========
 cookie 插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+```javascript 
 
+//举个栗子
+cookie('test','123456',30)
+cookie('test') //123456
+
+```
 
 
 extend.animate.js
 =========
 动画插件 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+```javascript 
 
+animate('#test',{width:100,height:100},1000,function(){
+ ...
+})
+
+//依赖extend.dom.js
+$('#test').animate({width:100,height:100},1000,function(){
+ ...
+})
+
+```
 
 
 extend.animate.tween.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+动画增效插件。[文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+```javascript 
+var easeing=tween.Cubic.easeInOut
+$('#test').animate({width:100,height:100},1000,easeing,function(){
+ ...
+})
 
+```
 
 
 plugins.validator.js
 =========
-前端模块化管理,移除了模块的url加载处理,简化了模块的调用。 [文档](./doc/validator.md)  [源码](./doc/validator.md)  `gzip 5kb`
+表单验证插件。 [文档](./doc/plugins.validator.md)  [源码](./src/plugins.validator.js)  `gzip 2kb`
+```javascript 
+validator({
+	formId:'form-1',
+	rules:{
+		username:{
+			label    : '用户名',
+			Default  : '请填写{label}',
+			Required : '{label}不能为空',
+			Focus    : '请填写{label}',
+			Length   : {'min':6,'max':12,'msg':'{label}不能小于{min}位,不能大于{max}位'},
+			Regexp   : {'reg':/^\w+$/, 'compare':false, 'msg':"{label}只能由数字、字母和下划线组成"},
+			Ajax     : {'url':'ajax.php', 'reg':'!==', 'msg':"{label}已经存在"},
+			Callback : {'fun':{}, 'msg':"{label}不能是6位数字，请另换一个"}
+		}
+})
 
+```
 
 
 plugins.layzr.js
