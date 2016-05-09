@@ -1,7 +1,7 @@
 前端轻量化插件 (持续造轮子中...)
 =====================
 
-> 杀鸡焉用牛刀，这些就够了！[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./LICENSE)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](./LICENSE) 杀鸡焉用牛刀，这些就够了！
 
 sujui.core.js
 =========
