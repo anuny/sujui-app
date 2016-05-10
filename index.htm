@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+</head>
+
+<body>
+
+
+
+<script>
+var cache=[]
+
+function loadScript(url, callback,charset) {
+	var doc=document,
+	head=doc.getElementsByTagName("head")[0] || doc.documentElement,
+	baseElement=doc.head.getElementsByTagName("base")[0],
+	isCss=/\.css(?:\?|$)/i.test(url),
+	node = doc.createElement(isCss ? 'link' : 'script');
+	node.charset = charset||'UTF-8'
+	isCss? (node.rel = 'stylesheet',node.href = url):(node.async = true, node.src = url);
+	node.onload = node.onerror = function(events) {
+		if (/^(?:loaded|complete|undefined)$/.test(node.readyState)) {
+			var parent = node.parentNode;
+			node.onload = node.onerror = node.onreadystatechange = null;
+			if (!isCss&&parent) parent.removeChild(node);
+			node = null;
+			callback(url, events.type);
+		}
+	};
+	baseElement ? head.insertBefore(node, baseElement) : head.appendChild(node);
+}
+
+
+function define(fn){
+	cache.push(fn)
+}
+
+
+loadScript('define.js',function(){
+	console.log(cache[0]())
+})
+	
+
+
+
+
+
+
+
+</script>
+
+</body>
+</html>
