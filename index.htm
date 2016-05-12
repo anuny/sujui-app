@@ -6,145 +6,15 @@
 </head>
 
 <body>
-
+<script src="loader.js"></script>
 
 
 <script>
-var cache={}
-var interactiveScript = null;
-var doc=document,
-	head=doc.getElementsByTagName("head")[0] || doc.documentElement,
-	baseElement=head.getElementsByTagName("base")[0]
-
-var forEach = Array.forEach ? function(arr, fn) {
-	arr.forEach(fn);
-} : function(arr, fn) {
-  	for (var i = 0; i < arr.length; i++){
-		fn(arr[i], i, arr);
-  	}
-};
-var filter = Array.filter ? function(arr, fn) {
-	return arr.filter(fn);
-} : function(arr,fn) {
-	var ret = [];
-	forEach(arr, function(item, i, arr) {
-		if (fn(item, i, arr)){
-			ret.push(item);
-		}
-  	});
-  	return ret;
-};
-
-var map = Array.map ? function(arr, fn) {
-  return arr.map(fn);
-}: function(arr, fn) {
-  var ret = [];
-  forEach(arr, function(item, i, arr) {
-	ret.push(fn(item, i, arr));
-  });
-  return ret;
-};
-
-var keys = Object.keys ? Object.keys: function(o) {
-  var ret = [];
-  for (var p in o) {
-	if (o.hasOwnProperty(p)){
-	  ret.push(p);
-	}
-  }
-  return ret;
-};
-var indexOf = Array.indexOf ? function(arr, selector) {
-  return arr.indexOf(selector);
-}: function(arr, selector) {
-  for (var i = 0; i < arr.length; i++) {
-	if (arr[i] === selector){
-	  return i;
-	}
-  }
-  return - 1;
-};
-
- function getCurrentScript() {
-        if(doc.currentScript) {
-            return doc.currentScript.src;
-        }
-        // 参考 https://github.com/samyk/jiagra/blob/master/jiagra.js
-        var stack;
-        try {
-            a.b.c(); //强制报错,以便捕获e.stack
-        } catch(e) {//safari的错误对象只有line,sourceId,sourceURL
-            stack = e.stack;
-            if(!stack && window.opera){
-                //opera 9没有e.stack,但有e.Backtrace,但不能直接取得,需要对e对象转字符串进行抽取
-                stack = (String(e).match(/of linked script \S+/g) || []).join(" ");
-            }
-        }
-        if(stack) {
-            stack = stack.split( /[@ ]/g).pop();//取得最后一行,最后一个空格或@之后的部分
-            stack = stack[0] == "(" ? stack.slice(1,-1) : stack;
-            return stack.replace(/(:\d+)?:\d+$/i, "");//去掉行号与或许存在的出错字符起始位置
-        }
-        var nodes = head.getElementsByTagName("script"); //只在head标签中寻找
-        for(var i = 0, node; node = nodes[i++];) {
-            if(node.readyState === "interactive") {
-                return node.className = node.src;
-            }
-        }
-    }	
-		
-function loadFile(url, callback,charset) {	
-	var isCss=/\.css(?:\?|$)/i.test(url),
-	node = doc.createElement(isCss ? 'link' : 'script');
-	node.charset = charset||'UTF-8'
-	isCss? (node.rel = 'stylesheet',node.href = url):(node.async = true, node.src = url ,node.id = url);
-	node.onload = node.onerror = function(events) {
-		if (/^(?:loaded|complete|undefined)$/.test(node.readyState)) {
-			var parent = node.parentNode;
-			node.onload = node.onerror = node.onreadystatechange = null;
-			if (!isCss&&parent) parent.removeChild(node);
-			node = null;
-			callback(url, events.type);
-		}
-	};
-	baseElement ? head.insertBefore(node, baseElement) : head.appendChild(node);
-}
 
 
-alert(1)	
 
-function define(id,factory){
-	var deps=[];
-	var req= /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g;  
-	if (typeof id !== 'string') {
-		factory=id
-		id = null;
-	};
-	
-	
-	if ('function'===typeof factory) {
-		factory.toString().replace(req, function (match, dep) {
-			deps.push(dep);
-		});
-	}else{
-		
-	};
-	var modName = document.currentScript && document.currentScript.id || 'REQUIRE_MAIN';
-	
-	alert(1)
-	cache[modName]=factory;
-	cache[modName]['deps']=deps
-	
-	
-	
-	
-	
-
-}
-
-
-loadFile('1.js',function(url){
-
+app.require(['1','2','3'],function(a,b,c){
+	console.log(a,b,c)
 	
 })
 	
