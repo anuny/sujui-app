@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>无标题文档</title>
+</head>
+
+<body>
+
+
+
+<script>
+var caches={}
+var modules={}
+var callbacks={}
+var doc=document,
+ 	docUrl = location.href;//去除问号之后部分
+	head=doc.getElementsByTagName("head")[0] || doc.documentElement,
+	baseElement=head.getElementsByTagName("base")[0],
+	type = function(val) {return null == val ? val + "": Array == val.constructor ? "array": typeof val},
+	isArray = function(val) {return type(val) === 'array'},
+	isString = function(val) {return type(val) === 'string'},
+	isBoolean = function(val) {return type(val) === 'boolean'},
+	isObject = function(val) {return type(val) === 'object'},
+	isFunction = function(val) {return type(val) === 'function'},
+	isEmptyObject = function(val) {for (var val in val) return false;return true},
+	isUrl = function(val) {return val.search(/^(http:\/\/|https:\/\/|\/\/)/) !== -1};
+	
+function dirname(path) {
+	return path.match(/[^?#]*\//)[0]
+}
+
+function realpath(path) {
+	path = path.replace(/\/\.\//g, "/").replace(/([^:\/])\/\/+/g, "$1/");
+	while (path.match(/\/[^/]+\/\.\.\//g))path = path.replace(/\/[^/]+\/\.\.\//g, "/");
+	return path
+}
+
+function suffix(uri) {
+	uri = realpath(uri);
+	/#$/.test(uri)?uri = uri.slice(0, -1):!/\?|\.(?:css|js)$|\/$/.test(uri)&&(uri += ".js");
+	return uri.replace(":80/", "/");
+}
+	
+function getCurrentScript() {
+	if(doc.currentScript)return doc.currentScript.src;
+	var stack;
+	try {
+		x.x.x();
+	} catch(e) {
+		stack = e.stack;
+		if(!stack && window.opera)stack = (String(e).match(/of linked script \S+/g) || []).join(" ");
+    }
+	if(stack) {
+		stack = stack.split( /[@ ]/g).pop();
+		stack = stack[0] == "(" ? stack.slice(1,-1) : stack;
+		return stack.replace(/(:\d+)?:\d+$/i, "");
+    };
+	var nodes = head.getElementsByTagName("script");
+	for(var i = 0, node; node = nodes[i++];) if(node.readyState === "interactive") return node.className = node.src;
+}	
+
+
+
+function getUri(uri) {
+	return uri?isUrl(uri)?uri.replace(/([^:])\/+/g, '$1/'):suffix(dirname(docUrl)+uri):getCurrentScript();
+}
+		
+function loadFile(url, callback,charset) {	
+	var isCss=/\.css(?:\?|$)/i.test(url),
+	node = doc.createElement(isCss ? 'link' : 'script');
+	node.charset = charset||'UTF-8'
+	isCss? (node.rel = 'stylesheet',node.href = url):(node.async = true, node.src = url ,node.id = url);
+	node.onload = node.onerror = function(events) {
+		if (/^(?:loaded|complete|undefined)$/.test(node.readyState)) {
+			var parent = node.parentNode;
+			node.onload = node.onerror = node.onreadystatechange = null;
+			if (!isCss&&parent) parent.removeChild(node);
+			node = null;
+			callback({url:url,events:events});
+		}
+	};
+	baseElement ? head.insertBefore(node, baseElement) : head.appendChild(node);
+}
+
+
+
+function define(id,deps,factory,cover){
+	var modName,
+	req= /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g; 
+	if (isArray(id)) cover = factory;
+	if (!isString(id)) factory = deps,deps = id,id = null;
+	if (!isArray(deps)) cover = factory,factory = deps,deps = [];
+	if (isFunction(factory))factory.toString().replace(req, function (match, dep) {deps.push(getUri(dep))});
+	modName = getUri(id);
+	caches[modName]={deps:deps,factory:factory,cover:cover,status:'loaded'};
+}
+function saveModule(uris,callback){
+	for(var i=0,uri;uri=uris[i++];){
+		uri=getUri(uri);
+		if(caches[uri])return caches[uri];
+		loadFile(uri,function(params){
+			if(params.events.type!=='load')return;
+			var cached=caches[params.url];
+			var mod={
+				cover:cached.cover,
+				deps:cached.deps,
+				factory:cached.factory,
+				exports:1
+			};
+			modules[params.url]=mod;
+			saveModule(cached.deps)
+			callback&&callback(modules)
+		});
+	}
+	
+	
+}
+function loadModule(uris,callback){
+	isArray(uris)||(uris=[uris]);
+	var mod=[]
+	saveModule(uris,function(modules){
+		callback(modules)
+	})
+	
+}
+function use(uris,callback){
+	isArray(uris)||(uris=[uris]);
+	loadModule(uris,function(exports){
+		callback&&callback.apply(null, exports)
+	})	
+}
+
+
+use(['1','2'],function(a,b){
+
+	console.log(b)
+})
+	
+
+
+</script>
+
+</body>
+</html>
