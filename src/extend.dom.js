@@ -1,4 +1,4 @@
-app.define('extend://dom', function (require,exports,module) {
+app.module(function (require,exports,module) {
     var dom = function (selector, context) {
         return new dom.fn.init(selector, context)
     };

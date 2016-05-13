@@ -110,13 +110,18 @@
 				var module = modules[key];
 				if (module.status === 'loaded')continue;
 				if (module.status === 'initial')cmd.loadDeps(module),module.status = 'loading';
-				if (module.status === 'loading') {	
+				if (module.status === 'loading') {
+					
+				
 					for (var i = 0; i < module.deps.length; i++) {
 						var uri = cmd.getUri(module.deps[i]);
+						console.log(module.deps)
 						if (cmd.cache[uri] && modules[uri].status === 'loaded')params.push(modules[uri].exports);
 					};
 					if (module.deps.length === params.length&&isFunction(module.exports)) {
 						module.exports = module.exports.apply(modules,params);
+						app.modules=modules;
+						
 						module.status = 'loaded';
 						cmd.loadModule();
 					}
@@ -134,15 +139,14 @@
 			module={uri:modName,deps:deps,status:status,exports:exports};
 			cmd.cache[modName] = module;
 			return cmd.loadModule();
-		},
+		}/*,
 		require: function(id,callback){
 			cmd.define.apply([], Array.prototype.slice.call(arguments).concat(cmd.uid()));
-		}
+		}*/
 	};
-	if(cmd.config.main)cmd.require([cmd.config.main],function(){});
+	if(cmd.config.main)cmd.define([cmd.config.main],function(){});
 	app.extend({
-		define: cmd.define,
-		require: cmd.require,
+		module: cmd.define,
 		config:function(config){
 			var base=config.base;
 			cmd.config.base=base

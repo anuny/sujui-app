@@ -1,4 +1,4 @@
-app.define('extend://ajax',function() {
+app.module('extend://ajax',function() {
 	function ajax(obj) {
 		if(!obj.url)
 			return;

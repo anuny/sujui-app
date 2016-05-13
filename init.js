@@ -1,3 +1,3 @@
-app.define(['extend://dom'],function($) {
-	alert($('#test').html())
+app.module(['extend://dom'],function($) {
+	console.log($)
 })
