@@ -152,7 +152,6 @@
 			cmd.config.base=base
 		}
 	});
-	
 	w.app = w.APP = app
 })(window);
 
