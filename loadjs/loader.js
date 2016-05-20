@@ -20,12 +20,12 @@
     var app = {
         version:"0.0.1",
         extend:function(module) {
-            var i = 0, target = this, deep = false, length = arguments.length, obj, empty, items, x;
+            var i = 0, target = this, deep = false, length = arguments.length, obj, empty, items, x,errorMsg='[extend => '+items+'] is basic module, can’t repeated';
             'boolean' === typeof arguments[0] ? (deep = true, i = 1, length > 2 ? (i = 2, target = arguments[1]) :void 0) :length > 1 ? (i = 1, target = arguments[0]) :void 0;
             for (x = i; x < length; x++) {
                 obj = arguments[x];
                 for (items in obj) {
-					if(items==='define'||items==='config'||items==='run'||items==='version') return app.log('error','[extend => '+items+'] is basic module, can’t repeated')
+					if(items==='define'||items==='config'||items==='run'||items==='version') return app.log('error',errorMsg);
                     if (obj[items] === target) continue;
                     deep && 'object' === typeof obj[items] && obj[items] !== null ? (empty = (Array == obj[items].constructor) ? [] :{}, 
                     target[items] = app.extend(deep, target[items] || empty, obj[items])) :target[items] = obj[items];
