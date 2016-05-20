@@ -123,7 +123,7 @@
         return 'function' === typeof this.factory?this.factory({require:require}):this.factory;
     };
     function addLoading(deps) {
-		Array !== deps.constructor || (deps=[deps])
+		Array == deps.constructor || (deps=[deps]);	
         for (var i = 0; i < deps.length; i++) {
             var id = deps[i], stat = loadings[id];
             loadings[id] = stat ? stat :ready;
