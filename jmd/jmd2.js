@@ -68,7 +68,8 @@
 				base:loaderScripts.getAttribute("app-base")||loaderSrc,
 				charset:'utf-8',
 				alias : {},
-				strict:false
+				strict:false,
+				cache:true
 			}
 		},
 		debug : function (id, callback){
@@ -138,7 +139,7 @@
 			return uri.replace(':80/', '/')
 		},
 		getUri:function (id) {
-			var uri;	
+			var uri,time = (new Date).getTime();	
 			var base=cmd.getDirname(cmd.data.config.base)
 			var isExtend=/^(extend|ext):\/\//i;
 			var isPlugins=/^(plugins|plu):\/\//i;
@@ -161,6 +162,20 @@
 			}else{
 				uri = cmd.getCurrentScript();
 			};
+			//console.log(cmd.data.config.cache)
+			if(!cmd.data.config.cache){
+				var c1=uri.split('?nocache=')[0],
+				c2=uri.split('?nocache=')[1];
+				if(c2){
+					uri = c1
+				}else{
+					uri += '?nocache='+ time;
+				}
+				//console.log(c1)
+				
+				
+			};
+			
 			return uri
 		},
 		loadScript:function(uri) {
@@ -171,16 +186,15 @@
 			node = doc.createElement(isCss ? 'link' : 'script');
 			node.charset = cmd.data.config.charset||'utf-8'
 			isCss? (node.rel = 'stylesheet',node.href = uri):(node.async = true, node.src = uri);
-			node.onload = node.onerror = node.onreadystatechange = function () {
-				var parent = node.parentNode;
-				if (!isCss&&parent) parent.removeChild(node);
-				node.onload = function(){
-					cmd.emit('loaded', uri);
-				}
-				node.onload = node.onerror = node.onreadystatechange = null;
-				node = null;	
-			};
 			baseElement ? head.insertBefore(node, baseElement) : head.appendChild(node);
+			
+			node.onload = function() {
+				cmd.emit('loaded', uri);
+			};
+			var parent = node.parentNode;
+			if (!isCss&&parent) parent.removeChild(node);
+			node.onload = node.onerror = node.onreadystatechange = null;
+			node = null;
 		},
 		loadDeps : function(module,deps) {		
 			var loadDeps = [];
@@ -246,7 +260,9 @@
 		appMain=cmd.getUri(appMain);
 		cmd.loadScript(appMain)
 	}
-/*	cmd.debug('loading', function (uri){
+	
+	console.log(app)
+	cmd.debug('loading', function (uri){
 		console.log('\t\t%c' + '-> load file: "%c' + uri + '"', 'color:green', 'color:black');
 	});
 	cmd.debug('loaded', function (module) {
@@ -258,7 +274,7 @@
 	
 	cmd.debug('complete', function (module) {
 		console.log('%ccomplete: %c ' + module.uri, 'color:green', 'color:green');
-	})*/
+	})
 
 
 	w.app = w.APP = app;
