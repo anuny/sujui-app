@@ -1,1 +1,0 @@
-app.define({a:1})
