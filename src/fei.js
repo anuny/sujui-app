@@ -31,17 +31,17 @@
     /**
      * 缓存数据
      * @modules   {Object}  模块缓存
-	 * @loadings  {Object}  加载状态
-	 * @queues    {array}   加载队列
+	 * @loadings  {Object}  加载队列
 	 * @configUrl {string}  配置文件路径
      */
     var data = {
         modules   : {},
         loadings  : {},
-        queues    : [],
+		queues    : [],
         configUrl : attr("app-config", 0)
     };
-    /**
+	
+	/**
      * 模块状态
      * @READY   {number}  文件准备
 	 * @LOADING {number}  文件已加载
@@ -52,6 +52,7 @@
         LOADING   : 0,
         LOADED    : 1
     };
+
     var app = {
         version : "0.0.1",
 		
@@ -172,7 +173,7 @@
 	 */
     function loadFile(uri, callback) {
         var type,isCss = /\.css(?:\?|$)/i.test(uri), node = doc.createElement(isCss ? "link" :"script");
-        isCss ? (node.rel = "stylesheet", node.href = uri,type = 'css') :(node.async = true, node.src = uri,type = 'javascript');
+        isCss ? (node.rel = "stylesheet", node.href = uri,type = 'css') :(node.async = true, node.src = uri,type = 'js');
         node.charset = config.charset || "utf-8";
         node.onload = node.onerror = node.onreadystatechange = function(events) {
             if (/loaded|complete|undefined/.test(node.readyState)) {	
@@ -181,7 +182,11 @@
                 if (!isCss && node.parentNode) node.parentNode.removeChild(node);
                 node = null;
 				
-                // 加载完成后回调
+				/**
+				 * 加载完成后回调
+				 * @type  { string } css||js
+				 * @state { string } error||load 
+				 */
                 callback && callback({type:type,state:events.type});
             }
         };
@@ -189,21 +194,33 @@
     }
     // 构造模块
     function Module(id, deps, factory) {
-        this.id           = id;
+		addLoading(deps);
+		this.id           = id;
         this.deps         = deps;
         this.factory      = factory;
-        this.require      = getExports;
-        addLoading(this.deps);
+        this.require      = getExports; 
         data.modules[id]  = this;
         data.loadings[id] = STAT.LOADED;
     }
     // 编译模块
     Module.prototype.compile = function() {
         return "function" === typeof this.factory ? this.factory({
-            require:getExports
+            require:this.require
         }) :this.factory;
     };
-    // 添加加载队列
+	
+
+    // 导出模块
+    function getExports(id) {
+		console.log(id)
+        var mod;
+        id  = getUri(id);
+        mod = data.modules[id];
+		
+        return mod.exports || (mod.exports = mod.compile());
+    }
+	
+	// 添加加载队列
     function addLoading(deps) {
         Array == deps.constructor || (deps = [ deps ]);
         for (var i = 0; i < deps.length; i++) {
@@ -212,23 +229,24 @@
         }
         deps = null;
     }
-    // 检查加载状态
+	
+	// 检查加载状态
     function checkLoading() {
         for (var id in data.loadings) {
             if (data.loadings[id] < STAT.LOADED) return false;
         }
         return true;
     }
-    // 加载依赖模块
+	// 加载依赖模块
     function loadDeps() {
         for (var id in data.loadings) {
             if (data.loadings[id] < STAT.LOADING) loadModule(id);
         }
     }
-    // 加载模块
+	// 加载模块
     function loadModule(id) {
         data.loadings[id] = STAT.LOADING;
-        loadFile(id, function() {
+        loadFile(id, function() {	
             if (checkLoading()) {
                 var queueLen = data.queues.length;
                 while (queueLen) {
@@ -237,15 +255,16 @@
                 }
                 if (queueLen == 0) {
                     data.modules  = null;
-                    data.loadings = null;
-                    data.queues   = null;
+					data.loadings = null;
+					data.queues   = null;
                 }
             } else {
                 loadDeps();
             }
         });
     }
-    // 遍历依赖
+	
+	 // 遍历依赖
     function getDeps(factory, callback) {
         var req = /[^.]\s*.require\s*\(\s*["']([^'"\s]+)["']\s*\)/g;
         factory = factory.toString();
@@ -253,13 +272,7 @@
             callback(getUri(dep));
         });
     }
-    // 导出模块
-    function getExports(id) {
-        var mod;
-        id  = getUri(id);
-        mod = data.modules[id];
-        return mod.exports || (mod.exports = mod.compile());
-    }
+	
     // 定义方法
     function define(id, factory) {
         var deps = [], idName = id;
@@ -281,48 +294,29 @@
         // 释放内存
         deps = null;
     }
-    function _use(dep, callback, isCallback) {
-        var mod, modName = dep;
-        dep = getUri(dep);
-        mod = data.modules[dep];
-        if (mod) {
-            var exports = getExports(dep);
-            callback(exports);
-        } else {
-            addLoading(dep);
-            loadFile(dep, function(param) {
-				var type = param.type,state = param.state;
-				if(state === 'load'){
-					if ("function" === typeof isCallback && type==='javascript') {
-						use(dep, function(param) {
-							callback(param);
-						});
-					}
-				}else{
-					return app.log("warn", 'module:["' + modName + '"] load error');
-					
-				}
-                
-            });
-        }
-    }
-    function use(deps, callback) {
-        Array == deps.constructor || (deps = [ deps ]);
-        var exports = [],
-		depsCount = deps.length;
-        for (var i = 0, len = deps.length; i < len; i++) {
-            (function(i) {
-                _use(deps[i], function(param) {
-                    depsCount--;
-                    exports[i] = param;
-                    if (depsCount === 0 && "function" === typeof callback) {
-                        callback.apply(null, exports);
-                        exports = null;
-                    }
-                }, callback);
-            })(i);
-        }
-    }
+
+	
+	/**
+     * 配置
+     * @config  app.config(params)
+	 * @params  {Object}  配置参数
+	 * @app.config({
+		base:'http://xxx.com/static/', 模块根路径
+		paths:{ 模块目录
+			js : 'js/'   => http://xxx.com/static/js/
+			css: 'css/'  => http://xxx.com/static/css/
+		},
+		alias:{ 模块别名
+			style: 'css/style.css', => http://xxx.com/static/css/style.css
+			mod1 : 'js/mod1.min',   => http://xxx.com/static/js/mod1.min.js
+			mod2 : 'js/mod2.min'    => http://xxx.com/static/js/mod2.min.js
+		},
+		charset:'utf-8', 编码方式
+		cover  : true,   是否允许模块重定义,默认为否|false
+		debug  : ture    是否开启调试模式,默认为否|false
+		})
+     */
+	
     app.config = function(params) {
         for (var i in params) {
             var param = params[i];
@@ -335,8 +329,14 @@
         }
         return config;
     };
-	data.configUrl && use(data.configUrl);
+	
+	if(data.configUrl){
+		var id = getUri(data.configUrl);
+		data.queues.push(id),
+		addLoading(id),
+		loadDeps();
+	};
+
     app.define = define;
-    app.use    = use;
     w.app = w.APP = app;
 })(window);
