@@ -189,13 +189,7 @@
         }
         deps = null;
     }
-	// 导出模块
-    function require(id) {
-		var mod;
-        id  = getUri(id);
-        mod = data.modules[id];
-        return mod.exports || (mod.exports = mod.compile());
-    }
+	
 	// 检查加载状态
     function checkLoading() {
         for (var id in data.loadings) {
@@ -238,6 +232,15 @@
 			callback(getUri(dep));
         });
 	}
+	
+	// 导出模块
+    function require(id) {
+		var mod;
+        id  = getUri(id);
+        mod = data.modules[id];
+        return mod.exports || (mod.exports = mod.compile());
+    }
+	
 	// 定义方法
     function define(id, factory) {
 		var deps = [],idName= id;
