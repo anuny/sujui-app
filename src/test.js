@@ -1,1 +1,3 @@
-var hahah = 1
+define('test',['test2'],function(test2){
+	return test2
+})

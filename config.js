@@ -1,3 +1,4 @@
+
 app.config({
 	base:'  ',
 	paths:{
@@ -12,29 +13,7 @@ app.config({
 	cover : true
 });
 
+app.use(['test'], function (test,test2) {
+    console.log(test);//输出 123
+});
 
-app.use(['util'],function(dom,css){
-	console.log(dom)
-})
-
-app.use(['util'],function(dom,css){
-	console.log(dom)
-})
-
-
-
-
-
-/*
-app.init(function(module){
-	var $ = this.require('extend://dom');
-	var dialog = this.require('plugins://dialog');
-	$('#test').click(function(){
-		dialog({
-			title:'hah'
-		})
-	})
-	
-})
-
-*/

@@ -1,466 +1,491 @@
-;(function (root) {
+;(function (w) {
     'use strict';
-    var modMap = [];
-    var moduleMap = [];
-
-    var toString = {}.toString;
-    var slice = [].slice;
-
-    var doc = document;
-    var head = doc.head || doc.getElementsByTagName("head")[0] || doc.documentElement;
-    var docCharset = doc.charset;
-    var docUrl = location.href.split('?')[0];//去除问号之后部分
-    var baseUrl = getCurSrc() || docUrl;
-
-    var gid = 0;
-    var commentRegExp = /(\/\*([\s\S]*?)\*\/|([^:]|^)\/\/(.*)$)/mg;
-    var cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g;
-    var interactiveScript = null;
-    var currentlyAddingScript = null;
-    var curExecModName = null;
-    var t = (new Date).getTime();
-    
-    var o = {};
-
-    function getGid() {
-        return gid++;
+    var doc       = w.document, 
+	head          = getTagName("head", doc)[0] || doc.documentElement, 
+	baseElement   = getTagName("base", head)[0], 
+	scripts       = getTagName("script", doc), 
+	loaderScripts = scripts[scripts.length - 1], 
+	loaderSrc     = loaderScripts.hasAttribute ? loaderScripts.src :attr("src", 4);
+		
+    function attr(name, idx) {
+        return loaderScripts.getAttribute(name, idx);
     }
-    function getType(x) {
-        if(x === null){
-            return 'null';
-        }
-
-        var t= typeof x;
-
-        if(t !== 'object'){
-            return t;
-        }
-
-        var c = toString.call(x).slice(8, -1).toLowerCase();
-        if(c !== 'object'){
-            return c;
-        }
-
-        if(x.constructor==Object){
-            return c;
-        }
-
-        return 'unkonw';
+    function getTagName(name, root) {
+        return root.getElementsByTagName(name);
     }
-    function isArr(arr) {
-        return Array.isArray ? Array.isArray(arr) : getType(arr) === 'array';
-    }
-    function isObj(obj) {
-        return getType(obj) === 'object';
-    }
-    function isFn(fn) {
-        return getType(fn) === 'function';
-    }
-    function extendDeep() {
-        var target = arguments[0] || {};
-        var arrs = slice.call(arguments, 1);
-        var len = arrs.length;
-        var copyIsArr;
-        var clone;
+    /**
+     * 配置数据
+     * @base    {string}  根路径
+	 * @paths   {Object}  文件目录
+	 * @charset {string}  编码
+	 * @cover   {boolean} 是否允许模块重定义
+	 * @alias   {Object}  模块路径
+     */
+    var configs  = {
+        base      : attr("app-base", 0) || loaderSrc,
+        paths     : {},
+        charset   : "utf-8",
+		cache     : true,
+        cover     : false,
+        alias     : {}
+    };
+	
+	
+    /**
+     * 缓存数据
+     * @modules   {Object}  模块缓存
+	 * @loadings  {Object}  加载队列
+	 * @configUrl {string}  配置文件路径
+	 * @configUrl {string}  配置文件路径
+	 * @curUri    {string}  加载文件模块名
+	 * @curScript {string}  加载文件node
+	 * @actScript {string}  加载文件node
+	 * @uuid      {string}  禁止缓存UUID
+     */
 
-        for (var i = 0; i < len; i++) {
-            var arr = arrs[i];
-            for (var name in arr) {
-                var src = target[name];
-                var copy = arr[name];
-                
-                //避免无限循环
-                if (target === copy) {
-                    continue;
-                }
-                
-                if (copy && (isObj(copy) || (copyIsArr = isArr(copy)))) {
-                    if (copyIsArr) {
-                        copyIsArr = false;
-                        clone = src && isArr(src) ? src : [];
+	var data = {
+        modules   : [],
+        modMap    : [],
+        configUrl : attr("app-config", 0),
+		curUri    : null,
+		curScript : null,
+		actScript : null,
+		uuid      : getUID()
+    };
+	
 
-                    } else {
-                        clone = src && isObj(src) ? src : {};
-                    }
-                    target[ name ] = extendDeep(clone, copy);
-                } else if (typeof copy !== 'undefined'){
-                    target[name] = copy;
+	
+	/**
+     * 模块状态
+     * @READY   {number}  文件准备
+	 * @LOADING {number}  文件已加载
+	 * @LOADED  {number}  文件已执行
+	 * @ERROR   {number}  文件加载错误
+     */
+    var STATUS = {
+        READY   : 'interactive',
+        LOADING : 'loading',
+        LOADED  : 'loaded',
+		ERROR   : 'error'
+    };
+	
+	var app = {
+        version : "0.0.1",
+		
+        /**
+		 * APP静态扩展
+		 * app.extend( { moduleName : factory } )
+		 * @factory { anything... }
+		 */
+        extend  : function(module) {
+            var i = 0, target = this, deep = false, length = arguments.length, obj, empty, items, x;
+            "boolean" === typeof arguments[0] ? (deep = true, i = 1, length > 2 ? (i = 2, target = arguments[1]) :void 0) :length > 1 ? (i = 1, target = arguments[0]) :void 0;
+            for (x = i; x < length; x++) {
+                obj = arguments[x];
+                for (items in obj) {
+                    if (obj[items] === target) continue;
+                    deep && "object" === typeof obj[items] && obj[items] !== null ? (empty = Array == obj[items].constructor ? [] :{}, 
+                    target[items] = app.extend(deep, target[items] || empty, obj[items])) :target[items] = obj[items];
                 }
             }
-
+            return target;
+        },
+		
+		 /**
+		 * 调试
+		 * app.log(type,msg)
+		 * @type { string }
+		 * @msg  { string }
+		 */
+        log:function(type, msg) {
+            return w.console ? console[type](msg) :alert(type + " : " + msg), false;
         }
+    };
 
-        return target;
+    function getUID() {
+        return "xyxxyxxxyx".replace(/[xy]/g, function (c) {
+			var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+			return v.toString(16);
+		});
     }
-    function loadjs(src, success, error, option) {
-        var d = extendDeep({
-            charset: docCharset,
-            cache: o.cache
-        }, option);
-
-        if (d.cache) {
-            src += '?t=' + t;
-        }
-        var node = doc.createElement('script');
-        node.src = src;
-        node.id = 'lodjs-js-' + getGid();
-        node.charset = d.charset;
-        if ('onload' in node) {
-            node.onload = success;
-            node.onerror = error;
-        } else {
-          node.onreadystatechange = function() {
-            if (/loaded|complete/.test(node.readyState)) {
-                success();
+	
+	function loadFile(uri, callback) {
+        var type,isCss = /\.css(?:\?|$)/i.test(uri), node = doc.createElement(isCss ? "link" :"script");
+        isCss ? (node.rel = "stylesheet", node.href = uri,type = 'css') :(node.async = true, node.src = uri,type = 'js');
+        node.charset = configs.charset || "utf-8";
+        node.onload = node.onerror = node.onreadystatechange = function(events) {
+            if (/loaded|complete|undefined/.test(node.readyState)) {	
+                // 释放内存
+                node.onload = node.onerror = node.onreadystatechange = null;
+                if (!isCss && node.parentNode) node.parentNode.removeChild(node);
+                node = null;
+				
+				/**
+				 * 加载完成后回调
+				 * @type  { string } css||js
+				 * @state { string } error||load 
+				 */
+                callback && callback({type:type,status:events.type});
             }
-          }
-        }
-        currentlyAddingScript = node;
-        head.appendChild(node);
-        currentlyAddingScript = null;
+        };
+		data.curScript = node;
+        baseElement ? head.insertBefore(node, baseElement) :head.appendChild(node);
+		data.curScript = null;
     }
-    function getCurSrc() {
-        if(doc.currentScript){
-            return doc.currentScript.src;
-        }
-        if (currentlyAddingScript) {
-            return currentlyAddingScript.src;
-        }
-        // For IE6-9 browsers, the script onload event may not fire right
-        // after the script is evaluated. Kris Zyp found that it
-        // could query the script nodes and the one that is in "interactive"
-        // mode indicates the current script
-        // ref: http://goo.gl/JHfFW
-        if (interactiveScript && interactiveScript.readyState === "interactive") {
-            return interactiveScript.src;
-        }
 
+	
+	// 获取当前加载文件地址
+    function getCurrentScript() {
+		if (doc.currentScript) return doc.currentScript.src;
+        if (data.curScript) return data.curScript.src;
+        if (data.actScript && data.actScript.readyState === STATUS.READY)  return data.actScript.src;
+		var nodes = getTagName("script", head);
         var scripts = head.getElementsByTagName("script");
-        for (var i = scripts.length - 1; i >= 0; i--) {
-            var script = scripts[i];
-            if (script.readyState === "interactive") {
-                interactiveScript = script;
-                return interactiveScript.src;
-            }
-        }
-        return null;
+		for (var i =  nodes.length - 1; i >=0; i--)
+		if (nodes[i].readyState === STATUS.READY)return data.actScript = nodes[i],data.actScript.src; 
     }
-    function isUrl(url) {
-        return url.search(/^(http:\/\/|https:\/\/|\/\/)/) !== -1;
+    // 获取文件目录
+    function getDirname(path) {
+        return path.match(/[^?#]*\//)[0];
     }
-    function fixUrl(url) {
-        return url.replace(/([^:])\/+/g, '$1/');
+    // 获取配置Paths
+    function getPaths(id) {
+        var paths = configs.paths;
+        var matchd;
+        if (paths && (matchd = id.match(/^([^\/:]+)(\/.+)$/)) && "string" === typeof paths[matchd[1]]) {
+            id = paths[matchd[1]] + matchd[2];
+        }
+        return id;
     }
-    function getUrl(path, url) {
-        //绝对网址
-        if (isUrl(path)) {
-            return fixUrl(path);
-        }
-
-        var rootUrl;
-        //修复url
-        if (rootUrl = url.match(/[^\/]*\/\/[^\/]*\//)) {
-            //http://yanhaijing.com/abc
-            url = url.slice(0, url.lastIndexOf('/') + 1);
-            rootUrl = rootUrl[0];
-        } else {
-            //http://yanhaijing.com
-            rootUrl = url = url + '/';
-        }
-
-        // /开头
-        if (path.search(/^\//) !== -1) {
-            return fixUrl(rootUrl + path);
-        }
-
-        // ../开头
-        if (path.search(/^\.\.\//) !== -1) {
-            while(path.search(/^\.\.\//) !== -1) {
-                if (url.lastIndexOf('/', url.length - 2) !== -1) {
-                    path = path.slice(3);
-                    url = url.slice(0, url.lastIndexOf('/', url.length - 2) + 1);
-                } else {
-                    throw new Error('lodjs geturl error, cannot find path in url');
-                }
-            }
-
-            return fixUrl(url + path);
-        }
-        // ./
-        path = path.search(/^\.\//) !== -1 ? path.slice(2) : path;
-
-        return fixUrl(url + path);
-    }
-    function fixSuffix(url, suffix) {
-        var reg = new RegExp('\\.' + suffix + '$', 'i');
-        return url.search(reg) !== -1 ? url : url + '.' + suffix;
-    }
-    function replacePath(id) {
-        var ids = id.split('/');
-        // id中不包含路径 或 查找路径失败
-        if (ids.length < 2 || !(ids[0] in o.path)) {
-            return id;
-        }
-        ids[0] = o.path[ids[0]];
-        return ids.join('/');
-    }
-    function getDepUrl(id, url) {
-        var pathId = replacePath(id);
-        //找到path 基于baseUrl
-        if (pathId !== id) {
-            url = o.baseUrl;
-        }
-        return fixSuffix(getUrl(pathId, url || o.baseUrl), 'js');
-    }
-    function getIdUrl(id){
-        //没有id的情况
-        if (!id) {
-            return getCurSrc();
-        }
-        //id不能为相对路径,amd规定此处也不能带后缀，此处放宽限制。
-        if (id.search(/^\./) !== -1) {
-            throw new Error('lodjs define id' + id + 'must absolute');
-        }
-        return fixSuffix(getUrl(id, o.baseUrl), 'js');
-    }
-    function require(id, url) {
-        var url = getDepUrl(id, url || curExecModName);
-        return moduleMap[url] && moduleMap[url].exports;
-    }
-    function fixPath(path) {
-        //path是网址
-        if (isUrl(path)) {
-            return getUrl('./', path).slice(0, -1);
+    // 过滤目录中的./ ../
+    function getRealPath(path) {
+        path = path.replace(/\/\.\//g, "/").replace(/([^:\/])\/\/+/g, "$1/");
+        while (path.match(/\/[^\/]+\/\.\.\//g)) {
+            path = path.replace(/\/[^\/]+\/\.\.\//g, "/");
         }
         return path;
     }
-    function config(option) {
-        if (!isObj(option)) {
-            return extendDeep({}, o);
-        }
-
-        //处理baseUrl
-        if (option.baseUrl) {
-            option.baseUrl = getUrl(option.baseUrl, docUrl);
-        }
-
-        //处理path
-        if (isObj(option.path)) {
-            for(var key in option.path) {
-                option.path[key] = fixPath(option.path[key]);
-            }
-        }
-        o = extendDeep(o, option);
-
-        //fix keywords
-        o.path.BASEURL = fixPath(option.baseUrl || o.baseUrl);
-        o.path.DOCURL = fixPath(docUrl);
-        return extendDeep({}, o);
+    // 补全文件名.js后缀
+    function getSuffix(uri) {
+        uri = getRealPath(uri);
+        /#$/.test(uri) ? uri = uri.slice(0, -1) :!/\?|\.(?:css|js)$|\/$/.test(uri) && (uri += ".js");
+        return uri.replace(":80/", "/");
     }
-    function execMod(modName, callback, params) {
+    // 根据id获取uri，完整的绝对路径
+    function getUri(id) {
+        var base   = getDirname(configs.base), 
+		isExtend   = /^(extend|ext):\/\//i, 
+		isPlugins  = /^(plugins|plu):\/\//i, 
+		isHttp     = /^(http:\/\/|https:\/\/|\/\/)/, 
+		isAbsolute = /:\//, 
+		isRoot     = /^\//, 
+		http_re    = /([^:])\/+/g, 
+		root_re    = /^.*?\/\/.*?\//;
+        if (configs.alias[id] != null) id = configs.alias[id];
+        if (id) {
+            id = getPaths(id);
+            // 网址文件
+            if (id.search(isHttp) !== -1) {
+                id = id.replace(http_re, "$1/");
+            } else if (isExtend.test(id)) {
+                id = base + "extend." + id.replace(isExtend, "");
+            } else if (isPlugins.test(id)) {
+                id = base + "plugins." + id.replace(isPlugins, "");
+            } else if (isAbsolute.test(id)) {
+                id = id;
+            } else if (isRoot.test(id)) {
+                id = (base.match(root_re) || [ "/" ])[0] + id.substring(1);
+            } else {
+                id = base + id;
+            }
+            id = getSuffix(id);
+        } else {
+            id = getCurrentScript();
+        }
+
+		if (configs.cache) {
+			id += id.indexOf('?')>-1?(id.indexOf('nocache=')==-1?'&nocache=' + data.uuid:''):'?nocache=' + data.uuid;           
+        }
+        return id;
+    }
+	
+	
+	 function execMod(id, callback, params) {
+		 var exports;
+
         //判断定义的是函数还是非函数
         if (!params) {
-            moduleMap[modName].exports = modMap[modName].callback;
+			if(data.modules[id]){
+				data.modules[id].exports = data.modMap[id].factory;
+			}else{
+				exports = 'this module no exports';
+			}
         } else {
-            curExecModName = modName;
+            data.curUri = id;
+			
             //commonjs
-            var exp = modMap[modName].callback.apply(null, params);
-            curExecModName = null;
+            var exp = data.modMap[id].factory.apply(null, params);
+            data.curUri = null;
+			
             //amd和返回值的commonjs
             if (exp) {
-                moduleMap[modName].exports = exp;
+                data.modules[id].exports = exp;
             }
+			exports =  data.modules[id].exports
         }
+
         //执行回调函数
-        callback(moduleMap[modName].exports);
+        callback(exports);
 
         //执行complete队列
-        execComplete(modName);
+        execComplete(id);
     }
-    function execComplete(modName) {
+	
+
+    function execComplete(id) {
         //模块定义完毕 执行load函数,当加载失败时，会不存在module
-        for (var i = 0; i < modMap[modName].oncomplete.length; i++) {
-            modMap[modName].oncomplete[i](moduleMap[modName] && moduleMap[modName].exports);
+        for (var i = 0; i < data.modMap[id].oncomplete.length; i++) {
+            data.modMap[id].oncomplete[i](data.modules[id] && data.modules[id].exports);
         }
         //释放内存
-        modMap[modName].oncomplete = [];
+        data.modMap[id].oncomplete = [];
     }
     function loadMod(id, callback, option) {
+		
+		
         //commonjs
         if(id === 'require') {
-            callback(require);
-            return -1;
+           return  callback(require);
         }
         if (id === 'exports') {
-            var exports = moduleMap[option.baseUrl].exports = {};
-            callback(exports);
-            return -2;
+            var exports = data.modules[option.uri].exports = {};
+            return callback(exports);
         }
         if (id === 'module') {
-            callback(moduleMap[option.baseUrl]);
-            return -3;
+            return callback(data.modules[option.uri]);
         }
-        var modName = getDepUrl(id, option.baseUrl);
-        //未加载
-        if (!modMap[modName]) {
-            modMap[modName] = {
+        id = getUri(id);
+		
+		
+
+		//未加载
+        if (!data.modMap[id]) {
+            data.modMap[id] = {
                 status: 'loading',
                 oncomplete: []
             };
-            loadjs(modName, function () {
-                //如果define的不是函数
-                if (!isFn(modMap[modName].callback)) {
-                    execMod(modName, callback);
-                    return 0;
-                }
 
-                //define的是函数
-                use(modMap[modName].deps, function () {                    
-                    execMod(modName, callback, slice.call(arguments, 0));
-                }, {baseUrl: modName});
-                return 1;
-            }, function () {
-                modMap[modName].status === 'error';
-                callback();
-                execComplete(modName);//加载失败执行队列
+			
+            return loadFile(id, function (params) {
+				if(params.status=='load'){	
+					
+					//如果define的不是函数
+					if ('function' !== typeof data.modMap[id].factory) {
+						return execMod(id, callback);
+					}
+	
+					//define的是函数
+					return use(data.modMap[id].deps, function () {
+						execMod(id, callback, [].slice.call(arguments, 0));
+					}, {uri: id});
+				}
+				
+				if(params.status=='error'){
+					data.modMap[id].status === 'error';
+					callback();
+					execComplete(id);//加载失败执行队列
+				}
+				
             });
-            return 0;
+            return;
         }
+
+       
 
         //加载失败
-        if (modMap[modName].status === 'error') {
-            callback();
-            return 1;
+        if (data.modMap[id].status === STATUS.ERROR) {
+            return callback();
         }
         //正在加载
-        if (modMap[modName].status === 'loading') {
-            modMap[modName].oncomplete.push(callback);
-            return 1;
+        if (data.modMap[id].status === STATUS.LOADING) {
+			
+            return data.modMap[id].oncomplete.push(callback);
         }
 
         //加载完成
         //尚未执行完成
-        if (!moduleMap[modName].exports) {
+        if (!data.modules[id].exports) {
             //如果define的不是函数
-            if (!isFn(modMap[modName].callback)) {
-                execMod(modName, callback);
-                return 2;
+            if ('function' !== typeof data.modMap[id].callback ) {
+               return  execMod(id, callback);
             } 
 
             //define的是函数
-            use(modMap[modName].deps, function () {
-                execMod(modName, callback, slice.call(arguments, 0));
-            }, {baseUrl: modName});
-            return 3;
+            return use(data.modMap[id].deps, function () {
+                execMod(id, callback, [].slice.call(arguments, 0));
+            },{uri: id});
         }
 
         //已经执行过
-        callback(moduleMap[modName].exports);
-        return 4;
+        return callback(data.modules[id].exports);
     }
-    function use(deps, callback, option) {
-        if (arguments.length < 2) {
-            throw new Error('lodjs.use arguments miss');
-            return 0;
-        }
-
-        if (typeof deps === 'string') {
-            deps = [deps];
-        }
-
-        if (!isArr(deps) || !isFn(callback)) {
-            throw new Error('lodjs.use arguments type error');
-            return 1;
-        }
-        //默认为当前脚本的路径或baseurl
-        if (!isObj(option)) {
-            option = {};
-        }
-        option.baseUrl = option.baseUrl || o.baseUrl;
-
-        if (deps.length === 0) {
-            callback();
-            return 2;
-        }
-        var depsCount = deps.length;
-        var params = [];
-        for(var i = 0; i < deps.length; i++) {
-            (function (j) {
-                loadMod(deps[j], function (param) {
-                    depsCount--;
-                    params[j] = param;
-                    if (depsCount === 0) {
-                        callback.apply(null, params);
-                    }
-                }, option);
-            }(i));
-        }
-
-        return 3;
+   
+	
+	// 构造模块
+    function Module(id, deps, factory) {
+		this.id            = id;
+        this.deps          = deps;
+        this.factory       = factory;
+		this.status        = STATUS.LOADED; 
+		this.oncomplete    = [];
+		data.modMap [id]   = this;
+		data.modules[id]   = {};
+		data.modules[id].id  = id;
     }
-    function define(name, deps, callback) {
-        //省略模块名
-        if (typeof name !== 'string') {
-            callback = deps;
-            deps = name;
-            name = null;
+	
+	 // 遍历依赖
+    function getDeps(factory, callback) {
+        var req = /[^.]\s*.require\s*\(\s*["']([^'"\s]+)["']\s*\)/g;
+        factory = factory.toString();
+        factory.replace(req, function(match, dep) {
+            callback(dep);
+        });
+    }
+	
+	
+    function define(id, deps, factory) {
+		
+		//省略模块名
+        if (typeof id !== 'string') {
+            factory = deps;
+            deps = id;
+            id = null;
+			
         }
-
-        //无依赖
-        if (!isArr(deps)) {
-            callback = deps;
+		 
+		
+		// define('123' || [1,2,3] )
+		if(arguments.length==1 && (Array == arguments[0].constructor || 'string' == typeof arguments[0])){
+			deps = []
+			factory = arguments[0]
+			id = null
+		}
+		
+		// define('test', [123] ) => [123]
+		if(arguments.length==2  && 'string' == typeof arguments[0] && Array == arguments[1].constructor && !factory){
+			deps = []
+			factory = arguments[1]
+		}
+		
+		
+		// 无依赖
+		if (Array !== deps.constructor) {
+            factory = deps;
             deps = [];
         }
-
-        //支持commonjs
-        if (deps.length === 0 && isFn(callback) && callback.length) {
-            callback
-                .toString()
-                .replace(commentRegExp, '')
-                .replace(cjsRequireRegExp, function (match, dep) {
-                    deps.push(dep);
-                });
-            var arr = ['require'];
-            if (callback.length > 1) {
+		
+		
+		// 遍历依赖
+        if (deps.length === 0 && factory && 'function' === typeof factory && factory.length) {
+			getDeps(factory, function(dep) {
+                deps.push(dep);
+            });
+			var arr = ['require'];
+            if (factory.length > 1) {
                 arr.push('exports');
             }
-            if (callback.length > 2) {
+            if (factory.length > 2) {
                 arr.push('module');
             }
             deps = arr.concat(deps);
         }
 
-        var modName = getIdUrl(name).split('?')[0];//fix 后缀
-
-        modMap[modName] = modMap[modName] || {};
-        modMap[modName].deps = deps;
-        modMap[modName].callback = callback;
-        modMap[modName].status = 'loaded';
-        modMap[modName].oncomplete = modMap[modName].oncomplete || [];
-        moduleMap[modName] = {};
-
-        return 0;
+        id = getUri(id);
+		
+		new Module(id,deps,factory)
     }
+	
+	 function use(deps, callback) {
+		var option = arguments[2];
 
-    define.amd = {from: 'lodjs'};
-    function debug() {
-        console.log(modMap, moduleMap);
+        if (typeof deps === 'string') {
+            deps = [deps];
+        }
+
+        if (callback && 'function' !== typeof callback) {
+            return app.log("error", 'app.use arguments type error');
+        }
+
+		//默认为当前脚本的路径或baseurl
+        if ('object'!==typeof option) {
+            option = {};
+        }
+        option.uri = option.uri || loaderSrc;
+		
+        if (deps.length === 0) {
+            return callback();
+        }
+        var depsCount = deps.length;
+        var exports = [];
+		for(var i = 0,len= deps.length; i < len; i++) {
+            (function (k) {
+                loadMod(deps[k], function (param) {
+                    depsCount--;
+                    exports[k] = param;
+                    if (depsCount === 0) {
+                       callback && callback.apply(null, exports);
+                    }
+                }, option);
+            }(i));
+        }
     }
-    var lodjs = {
-        version: '0.1.0',
-        use: use,
-        loadjs: loadjs,
-        config: config,
-        define: define,
-        require: require,
-        debug: debug
+	
+	function require(id) {
+        id = getUri(id);
+        return data.modules[id] && data.modules[id].exports;
+    }
+	
+	/**
+     * 配置
+     * @config  app.config(params)
+	 * @params  {Object}  配置参数
+	 * @app.config({
+		base:'http://xxx.com/static/', 模块根路径
+		paths:{ 模块目录
+			js : 'js/'   => http://xxx.com/static/js/
+			css: 'css/'  => http://xxx.com/static/css/
+		},
+		alias:{ 模块别名
+			style: 'css/style.css', => http://xxx.com/static/css/style.css
+			mod1 : 'js/mod1.min',   => http://xxx.com/static/js/mod1.min.js
+			mod2 : 'js/mod2.min'    => http://xxx.com/static/js/mod2.min.js
+		},
+		charset:'utf-8', 编码方式
+		cover  : true,   是否允许模块重定义,默认为否|false
+		debug  : ture    是否开启调试模式,默认为否|false
+		})
+     */
+	function config(params) {
+        for (var i in params) {
+            var param = params[i],_param;
+            if ("string" === typeof param) {
+                var _param = param.replace(/\s+/g, "");
+                _param && (configs[i] = _param);
+            } else {
+                configs[i] = param;
+            }
+        }
+        return configs;
     };
 
-    lodjs.config({
-        baseUrl: baseUrl,
-        path: {},
-        cache: false
-    });
-    root.define = define;
-    root.lodjs = lodjs;
+	
+	if(data.configUrl){
+		use(configs.base + data.configUrl)
+	};
+	app.config = config
+	app.use = use
+	app.load = loadFile
+	app.require = require
+	app.define = w.define = define;
+    w.app = w.APP = app;
 }(window));

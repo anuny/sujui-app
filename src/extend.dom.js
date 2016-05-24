@@ -46,7 +46,7 @@ app.define(function (require,exports,module) {
             return each(this, callback, args);
 
         },
-		click : function (callback) {
+		on : function (callback) {
 			this[0].onclick=callback
 		
 		},

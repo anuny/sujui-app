@@ -199,6 +199,7 @@
         this.deps         = deps;
         this.factory      = factory;
         this.require      = getExports; 
+		
         data.modules[id]  = this;
         data.loadings[id] = STAT.LOADED;
     }
@@ -212,7 +213,6 @@
 
     // 导出模块
     function getExports(id) {
-		console.log(id)
         var mod;
         id  = getUri(id);
         mod = data.modules[id];
@@ -331,9 +331,9 @@
     };
 	
 	if(data.configUrl){
-		var id = getUri(data.configUrl);
-		data.queues.push(id),
-		addLoading(id),
+		var configs = getUri(data.configUrl);
+		data.queues.push(configs),
+		addLoading(configs),
 		loadDeps();
 	};
 
