@@ -32,8 +32,7 @@ app.define(function() {
 		isUrl: function(val) {return /^http:\/\/(?:[\w-\.]{0,255})(?:(?:\/?[^\s]{0,255}){0,255})/g.test(val)},
 		isEnglish:function(val) {return /^[A-Za-z]+$/.test(val)},
 		isQQ:function(val) {return /^[1-9]\d{4,9}$/.test(val)&& parseInt(this)<=4294967294},
-		isMobile:function(val) {return /^1[3458]\d{9}$/.test(val)},
-		isTel:function(val) {return /^[+]{0,1}(\d){1,3}[]?([-]?((\d)|[]){1,12})+$/.test(val)}
+		isMobile:function(val) {return /^1[3458]\d{9}$/.test(val)}
 	};
 	
 	var array={

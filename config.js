@@ -10,10 +10,14 @@ app.config({
 		'index':'app/index'
 	},
 	charset:'utf-8',
-	cover : true
+	cache: false,
+	debug : true
 });
 
-app.use(['test'], function (test,test2) {
-    console.log(test);//输出 123
+app.define('demo',function(require,exports,module){
+	var index = module.require('index')
+	return index
+})
+app.use(['util','demos'], function (util,demo) {
+    //alert(demo);
 });
-

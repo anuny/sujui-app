@@ -1,4 +1,4 @@
-app.define(function(module){
-	return 'index'
+app.define(function(require,exports,module){
+	return   'index'
 })
 
