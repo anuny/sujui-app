@@ -15,9 +15,8 @@ app.config({
 });
 
 app.define('demo',function(require,exports,module){
-	var index = module.require('index')
-	return index
+	return 'demo'
 })
-app.use(['util','demos'], function (util,demo) {
-    //alert(demo);
+app.use(['demo','util'], function (demo,util) {
+	document.getElementById('test').innerHTML = demo+util
 });

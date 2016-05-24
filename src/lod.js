@@ -113,25 +113,29 @@
         var type,status,isCss = /\.css(?:\?|$)/i.test(uri), node = doc.createElement(isCss ? "link" :"script");
         isCss ? (node.rel = "stylesheet", node.href = uri,type = 'css') :(node.async = true, node.src = uri,type = 'js');
         node.charset = configs.charset || "utf-8";
-
-        node.onload = node.onerror = node.onreadystatechange = function(events) {
-            if (/loaded|complete|undefined/.test(node.readyState)) {	
-                if (!isCss && node.parentNode) node.parentNode.removeChild(node);
-
-				// 释放内存
-				node.onload = node.onerror = node.onreadystatechange = null;
-                node = null;
-				
-				/**
-				 * 加载完成后回调
-				 * @type  { string } css||js
-				 * @state { string } error||load 
-				 */
-                callback && callback({type:type,status:events.type});
+		
+		if ('onload' in node) {
+            node.onload = function(){
+				cbk('load')
+			};
+            node.onerror = function(){
+				cbk('error')
+			};
+        } else {
+          node.onreadystatechange = function() {
+            if (/loaded|complete|undefined/.test(node.readyState)) {
+                cbk('load');
             }
-        };
+          }
+        }
+		function cbk(status){
+			callback && callback({type:type,status:status});
+			if (!isCss && node.parentNode) node.parentNode.removeChild(node);
+			node.onload = node.onerror = node.onreadystatechange = null;
+			node = null;
+		}
 		data.curScript = node;
-        baseElement ? head.insertBefore(node, baseElement) :head.appendChild(node);
+		baseElement ? head.insertBefore(node, baseElement) :head.appendChild(node);
 		data.curScript = null;
     }
 
@@ -356,10 +360,10 @@
 	
     function define(id, deps, factory) {
 		function type(obj){
+			
 			return Array == obj.constructor?'array':typeof obj
 		}
 		var args=arguments;
-		
 		//省略模块名
         if (typeof id !== 'string') {
             factory = deps;
