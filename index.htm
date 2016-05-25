@@ -10,14 +10,20 @@
 <script src="define/dom.js" ></script>
 <div id="test">
   <div class="demo">
-    <li class="test">123</li>
+    <li class="test"><a href="#">123</a></li>
   </div>
+  <h3 class="demo">
+  <div class="test"><a href="#">456</a></div>
+  <li class="test"><a href="#">123</a></li>
+  </h3>
 </div>
 <script>
 
+
+
 require('dom',function(dom){
-	var test = dom('#test .demo li a')
-	
+	var test = dom('div#test div.demo li')
+	console.log(test)
 })
 </script>
 </body>
