@@ -14,9 +14,7 @@ app.config({
 	debug : true
 });
 
-app.define('demo',function(require,exports,module){
-	return 'demo'
-})
-app.use(['demo','util'], function (demo,util) {
-	document.getElementById('test').innerHTML = demo+util
+
+app.use(['id','index','test.css'], function (test,index,css) {
+	document.getElementById('test').innerHTML = test+index
 });

@@ -6,10 +6,19 @@
 </head>
 
 <body>
-<script src="src/lod.js"  
-app-base="http://localhost/sujui.app/src/" app-config="../config"></script>
+<script src="define/sujui.js" ></script> 
+<script src="define/dom.js" ></script>
+<div id="test">
+  <div class="demo">
+    <li class="test">123</li>
+  </div>
+</div>
+<script>
 
-<div id="test">123</div>
-
+require('dom',function(dom){
+	var test = dom('#test .demo li a')
+	
+})
+</script>
 </body>
 </html>

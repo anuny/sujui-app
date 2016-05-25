@@ -1,4 +1,4 @@
-app.define(function (require,exports,module) {
+define('dom',function (require,exports,module) {
     var dom = function (selector, context) {
         return new dom.fn.init(selector, context)
     };
@@ -142,9 +142,11 @@ app.define(function (require,exports,module) {
                 };
                 (selector === window || selector === document) && (context = selector);
                 var simple = /^[\w\-_#]+$/.test(selector);
+				
                 if (!simple && context.querySelectorAll) {
-                    return realArray(context.querySelectorAll(selector))
+                    //return realArray(context.querySelectorAll(selector))
                 }
+				
                 if (indexof(selector,',') > -1) {
                     var split = selector.split(/,/g),
                         ret = [],
@@ -153,12 +155,18 @@ app.define(function (require,exports,module) {
                     for (; sIndex < len; ++sIndex) ret = ret.concat(_find(split[sIndex], context));
                     return unique(ret)
                 }
+				
                 var parts = selector.match(snack),
                     part = parts.pop(),
                     id = (part.match(exprId) || na)[1],
                     className = !id && (part.match(exprClassName) || na)[1],
                     nodeName = !id && (part.match(exprNodeName) || na)[1],
                     collection;
+					
+					
+					console.log(id)
+					
+					
                 if (className && !nodeName && context.getElementsByClassName) {
                     collection = realArray(context.getElementsByClassName(className))
                 } else {
@@ -171,6 +179,7 @@ app.define(function (require,exports,module) {
                         return byId ? [byId] : []
                     }
                 }
+				
                 return parts[0] && collection[0] ? filterParents(parts, collection) : collection
             }
             function realArray(c) {
@@ -186,6 +195,7 @@ app.define(function (require,exports,module) {
             }
             function filterParents(selectorParts, collection, direct) {
                 var parentSelector = selectorParts.pop();
+				
                 if (parentSelector === '>') {
                     return filterParents(selectorParts, collection, true)
                 }
@@ -197,6 +207,7 @@ app.define(function (require,exports,module) {
                     cIndex = -1,
                     node, parent, matches;
                 nodeName = nodeName && nodeName.toLowerCase();
+				
                 while ((node = collection[++cIndex])) {
                     parent = node.parentNode;
                     do {
@@ -208,6 +219,7 @@ app.define(function (require,exports,module) {
                     if (matches) ret[++r] = node
                 }
                 return selectorParts[0] && ret[0] ? filterParents(selectorParts, ret) : ret
+				
             }
             var unique = (function () {
                 var uid = +new Date();

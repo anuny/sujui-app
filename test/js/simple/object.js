@@ -1,0 +1,1 @@
+define({'obj':'simple-object'});

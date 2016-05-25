@@ -5,9 +5,10 @@
 	baseElement   = getTagName("base", head)[0], 
 	scripts       = getTagName("script", doc), 
 	loaderScripts = scripts[scripts.length - 1], 
-	loaderSrc     = loaderScripts.hasAttribute ? loaderScripts.src :attr("src", 4);
-	
-		
+	loaderSrc     = loaderScripts.hasAttribute ? loaderScripts.src :attr("src", 4),
+	baseSrc       = attr("app-base", 0) || loaderSrc,
+	configSrc     = attr("app-config", 0);
+
     function attr(name, idx) {
         return loaderScripts.getAttribute(name, idx);
     }
@@ -22,7 +23,7 @@
 	 * @alias   {Object}  模块路径
      */
     var configs  = {
-        base      : attr("app-base", 0) || loaderSrc,
+        base      : baseSrc,
         paths     : {},
         charset   : "utf-8",
 		cache     : true,
@@ -46,10 +47,11 @@
 	var data = {
         modules   : [],
         modMap    : [],
-        configUrl : attr("app-config", 0),
+		uri       : {},
 		curUri    : null,
 		curScript : null,
 		actScript : null,
+		configUrl : configSrc,
 		uuid      : getUID()
     };
 
@@ -110,9 +112,9 @@
     }
 	
 	function loadFile(uri, callback) {
-        var type,status,isCss = /\.css(?:\?|$)/i.test(uri), node = doc.createElement(isCss ? "link" :"script");
-        isCss ? (node.rel = "stylesheet", node.href = uri,type = 'css') :(node.async = true, node.src = uri,type = 'js');
-        node.charset = configs.charset || "utf-8";
+        var status,isCss = /\.css(?:\?|$)/i.test(uri), node = doc.createElement(isCss ? "link" :"script");
+        isCss ? (node.rel = "stylesheet", node.href = uri) :(node.type="text/javascript", node.async = true, node.src = uri);
+        node.charset = configs.charset;
 		
 		if ('onload' in node) {
             node.onload = function(){
@@ -129,7 +131,7 @@
           }
         }
 		function cbk(status){
-			callback && callback({type:type,status:status});
+			callback && callback(status);
 			if (!isCss && node.parentNode) node.parentNode.removeChild(node);
 			node.onload = node.onerror = node.onreadystatechange = null;
 			node = null;
@@ -146,9 +148,12 @@
         if (data.curScript) return data.curScript.src;
         if (data.actScript && data.actScript.readyState === STATUS.READY)  return data.actScript.src;
 		var nodes = getTagName("script", head);
-        var scripts = head.getElementsByTagName("script");
-		for (var i =  nodes.length - 1; i >=0; i--)
-		if (nodes[i].readyState === STATUS.READY)return data.actScript = nodes[i],data.actScript.src; 
+		for (var i =  nodes.length - 1; i >=0; i--){
+			if (nodes[i].readyState === STATUS.READY){
+				data.actScript = nodes[i];
+				return data.actScript.src;
+			}
+		} 
     }
     // 获取文件目录
     function getDirname(path) {
@@ -179,7 +184,18 @@
     }
     // 根据id获取uri，完整的绝对路径
     function getUri(id) {
+		// 无ID，获取当前currentScript地址
+		if(!id){
+			id = getCurrentScript();
+		}
+		// 读取缓存，减少内存开销
+		if(data.uri[id]){
+			return data.uri[id];
+		}
+		
+		// 没有缓存，写入缓存
         var base   = getDirname(configs.base), 
+		uri		   = id,
 		isExtend   = /^(extend|ext):\/\//i, 
 		isPlugins  = /^(plugins|plu):\/\//i, 
 		isHttp     = /^(http:\/\/|https:\/\/|\/\/)/, 
@@ -187,32 +203,34 @@
 		isRoot     = /^\//, 
 		http_re    = /([^:])\/+/g, 
 		root_re    = /^.*?\/\/.*?\//;
-        if (configs.alias[id] != null) id = configs.alias[id];
-        if (id) {
-            id = getPaths(id);
-            // 网址文件
-            if (id.search(isHttp) !== -1) {
-                id = id.replace(http_re, "$1/");
-            } else if (isExtend.test(id)) {
-                id = base + "extend." + id.replace(isExtend, "");
-            } else if (isPlugins.test(id)) {
-                id = base + "plugins." + id.replace(isPlugins, "");
-            } else if (isAbsolute.test(id)) {
-                id = id;
-            } else if (isRoot.test(id)) {
-                id = (base.match(root_re) || [ "/" ])[0] + id.substring(1);
-            } else {
-                id = base + id;
-            }
-            id = getSuffix(id);
-        } else {
-            id = getCurrentScript();
-        }
+		
+        if (configs.alias[id] != null){
+			uri = configs.alias[uri]
+		}
+		
+		uri = getPaths(uri);
+		// 网址文件
+		if (uri.search(isHttp) !== -1) {
+			uri = uri.replace(http_re, "$1/");
+		} else if (isExtend.test(id)) {
+			uri = base + "extend." + uri.replace(isExtend, "");
+		} else if (isPlugins.test(id)) {
+			uri = base + "plugins." + uri.replace(isPlugins, "");
+		} else if (isAbsolute.test(id)) {
+			uri = uri;
+		} else if (isRoot.test(id)) {
+			uri = (base.match(root_re) || [ "/" ])[0] + uri.substring(1);
+		} else {
+			uri = base + uri;
+		}
+		uri = getSuffix(uri);
 
 		if (!configs.cache) {
-			id += id.indexOf('?')>-1?(id.indexOf('nocache=')==-1?'&nocache=' + data.uuid:''):'?nocache=' + data.uuid;           
+			var nocache = 'nocache=' + data.uuid;
+			uri += uri.indexOf('?')>-1?(uri.indexOf('nocache=')==-1?'&'+nocache:''):'?' + nocache;           
         }
-        return id;
+		data.uri[id] = uri;
+        return uri;
     }
 	
 	
@@ -244,6 +262,7 @@
 
         //执行complete队列
         execComplete(id);
+		exports = null;
     }
 	
 
@@ -281,9 +300,8 @@
             };
 
 			
-            loadFile(id, function (params) {
-				if(params.status=='load'){	
-					
+            loadFile(id, function (status) {
+				if(status=='load'){	
 					//如果define的不是函数
 					if ('function' !== typeof data.modMap[id].factory) {
 						return execMod(id, callback);
@@ -295,7 +313,7 @@
 					}, {uri: id});
 				}
 				
-				if(params.status=='error'){
+				if(status=='error'){
 					data.modMap[id].status === 'error';
 					callback();
 					execComplete(id);//加载失败执行队列
@@ -313,7 +331,6 @@
         }
         //正在加载
         if (data.modMap[id].status === STATUS.LOADING) {
-			
             return data.modMap[id].oncomplete.push(callback);
         }
 
@@ -359,41 +376,27 @@
 	
 	
     function define(id, deps, factory) {
-		function type(obj){
-			
-			return Array == obj.constructor?'array':typeof obj
-		}
-		var args=arguments;
+
+		
 		//省略模块名
         if (typeof id !== 'string') {
             factory = deps;
             deps = id;
             id = null;
 			
-        }
-		
-		 
-		
-		// define('123' || [1,2,3] )
-		if(args.length==1 && (type(args[0])=='array' || 'string' == typeof args[0])){
-			deps = []
-			factory = arguments[0]
-			id = null
+        }else{
+			if(!deps&&!factory){
+				factory = id
+				deps = []
+				id = null
+			}
 		}
-		
-		// define('test', [123] ) => [123]
-		if(args.length==2  && 'string' == typeof args[0] && Array == args[1].constructor && !factory){
-			deps = []
-			factory = arguments[1]
-		}
-		
-		
-		// 无依赖
-		if (Array !== deps.constructor) {
+
+		if ((Array !== deps.constructor)|| (!id && !factory) || (id&&Array == deps.constructor&&!factory)) {
             factory = deps;
             deps = [];
         }
-		
+
 		
 		// 遍历依赖
         if (deps.length === 0 && factory && 'function' === typeof factory && factory.length) {
@@ -401,16 +404,13 @@
                 deps.push(dep);
             });
 			var cmdArr = ['require'];
-            if (factory.length > 1) {
-                cmdArr.push('exports');
-            }
-            if (factory.length > 2) {
-                cmdArr.push('module');
-            }
+            if (factory.length > 1) cmdArr.push('exports')
+            if (factory.length > 2)  cmdArr.push('module')
             deps = cmdArr.concat(deps);
         }
         id = getUri(id);
 		new Module(id,deps,factory)
+		deps = null;
     }
 	
 	 function use(deps, callback) {
@@ -442,7 +442,7 @@
                     exports[k] = param;
                     if (depsCount === 0) {
                        callback && callback.apply(null, exports);
-					   exports = null;deps=null
+					   exports = null;deps=null;option=null;
                     }
                 }, option);
             }(i));
@@ -489,12 +489,11 @@
 
 	
 	if(data.configUrl){
-		use(configs.base + data.configUrl)
+		var base   = getDirname(configs.base);
+		use(base + data.configUrl)
 	};
 	app.config = config
 	app.use = use
-	app.load = loadFile
-	app.require = require
 	app.define = w.define = define;
     w.app = w.APP = app;
 }(window));
