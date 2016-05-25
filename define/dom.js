@@ -127,7 +127,9 @@ define('dom',function(){
 					ele = filter(selector,context)					
 				}
 			}
-		};
+		}else{
+			ele = selector
+		}
 		return ele
 	}
 
