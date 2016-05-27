@@ -4,6 +4,15 @@ define('dom',function (require,exports,module) {
     };
     dom.fn = dom.prototype;
 	var events = {},
+	on = function (ele,eventType, handler){
+		events[ele] = ele;
+		events[ele][eventType] = handler
+		document.addEventListener ? ele.addEventListener(eventType, handler) : elem.attachEvent("on" + eventType, handler);
+	},
+	off = function (ele,eventType){
+		var handler = events[ele][eventType]
+		document.addEventListener ? ele.removeEventListener(eventType, handler) : elem.detachEvent("on" + eventType, handler);
+	},
 	each=function (object, callback, args){
 		var name, i = 0, length = object.length;
 			if ( args ) {
@@ -20,7 +29,6 @@ define('dom',function (require,exports,module) {
 				}
 			}
 			return object;
-		
 	},
 	indexof=function(array,obj){	
 		if (![].indexOf) {  
@@ -46,12 +54,17 @@ define('dom',function (require,exports,module) {
             return each(this, callback, args);
 
         },
-		on : function (callback) {
-			this[0].onclick=callback
-		
+		on : function(eventType, handler){
+			this.each(function(i,ele){
+				on(ele,eventType, handler)
+			})
+			return this
 		},
-		off : function (event, callback) {
-			
+		off : function(elem, eventType){
+			this.each(function(i,ele){
+				off(ele,eventType)
+			})
+			return this
 		},
         find: function (selector) {
             return dom(selector, this[0])

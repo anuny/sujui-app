@@ -13,6 +13,9 @@ define(function(require, exports, module) {
 				animate:true,
 				animateSpeed:300,
 				icoPosition:[]
+			},
+			data:{
+				contextmenu:function(){}
 			}
 		},
 		icons:{
@@ -30,13 +33,28 @@ define(function(require, exports, module) {
 				clickStyle=config.clickStyle||'click',
 				dbclickStyle=config.dblclickStyle||'dbclick',
 				rightclickStyle=config.rightclickStyle||'dbclick',
-				n=parseInt(desktopIcon.outerHeight()/height);
+				n=parseInt(desktopIcon.outerHeight()/height),
+				state = false;
+				
 				function Click(){
 				}
 				function dblClick(){
 				}
 				function rightClick(){
 				}
+				
+				function getContext(opt){
+					$('#contextmenu').fadeIn().css(opt)
+				}
+				
+				$(document).bind("contextmenu",function(e){
+					if(typeof CONFIG.data.contextmenu == 'function'){
+						CONFIG.data.contextmenu()
+					}
+					getContext({left:e.clientX,top:e.clientY})
+					return false;
+				});
+							
 				icons.each(function(i) {
 					var thisIco=$(this),
 					thisLeft=parseInt(i/n)*width+15,
@@ -46,10 +64,19 @@ define(function(require, exports, module) {
 					ELEMENT.icons[i].index=i;
 					CONFIGICON.icoPosition[i]={'left':thisLeft,'top':thisTop};
 					DESKTOP.icons.drag(icons[i]);
-					thisIco.on('hover',function(){
+					
+					thisIco.hover(function(e){
 						thisIco.addClass(hoverStyle).siblings('li').removeClass(hoverStyle);
+						state = false;
+						var data=$(this).data()
+						
+						CONFIG.data.contextmenu=function(){
+							getContext({left:e.clientX,top:e.clientY})
+						}
 					},function(){
 						thisIco.removeClass(hoverStyle)
+						state = true;
+						CONFIG.data.contextmenu=null
 					})
 					.on('mousedown',function(e){
 						thisIco.addClass(clickStyle).siblings('li').removeClass(clickStyle)	;
@@ -63,10 +90,11 @@ define(function(require, exports, module) {
 						thisIco.addClass(dbclickStyle).siblings('li').removeClass(dbclickStyle);
 						dblClick();
 					});
-					ELEMENT.desktop.on('mouseup',function(){
-						icons.removeClass(clickStyle).removeClass(dbclickStyle);
-					})
 				});
+				ELEMENT.desktop.on('mouseup',function(){
+					if(!state)return
+					icons.removeClass(clickStyle).removeClass(dbclickStyle);
+				})
 			},
 			drag:function(ico){
 				var icons=DESKTOP.config.element.icons,

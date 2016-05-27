@@ -9,9 +9,7 @@ seajs.config({
 	}
 });
 seajs.use(['jquery'],function() {
-	$(document).bind("contextmenu",function(e){
-		return false;
-	});
+	
 	seajs.use('app/desktop',function(desktop) {
 		desktop.icons({
 			width:100,

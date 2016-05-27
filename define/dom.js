@@ -2,6 +2,7 @@ define("dom",
 function() {
 	var w = window,
 	doc = w.document,
+	handlerMap = {},
 	parentsExp = /(?:[\w\-\\.#]+)+(?:\[\w+?=([\'"])?(?:\\\1|.)+?\1\])?|\*|>/gi,
 	simpleExp = /^[\w\-_#]+$/,
 	trimExp = /^\s*|\s*$/g,
@@ -24,6 +25,17 @@ function() {
 		},
 		each: function(callback) {
 			return each(this, callback);
+		},
+		on : function(eventType, handler){
+			return 'function' == typeof handler?
+			this.each(function(i,ele){
+				ele && on(ele,eventType, handler)
+			}):this
+		},
+		off : function(eventType){
+			return this.each(function(i,ele){
+				(ele && ele.handlerMap && ele.handlerMap[eventType]) && off(ele,eventType)
+			})
 		},
 		find: function(selector) {
 			var ele = [];
@@ -103,6 +115,19 @@ function() {
             return this
         }
 	};
+	
+	
+	function on(ele,eventType, handler){
+		ele['handlerMap'] = {}
+		ele['handlerMap'][eventType] = handler;
+		doc.addEventListener ? ele.addEventListener(eventType, handler) : ele.attachEvent("on" + eventType, handler);	
+	}
+	function off(ele,eventType){
+		var handler = ele['handlerMap'][eventType]
+		doc.removeEventListener ? ele.removeEventListener(eventType, handler) : ele.detachEvent("on" + eventType, handler);
+		delete ele['handlerMap'][eventType];
+	}
+	
 	function getIdName(node) {
 		return (node.match(idExp) || NAN)[1]
 	}

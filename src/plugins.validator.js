@@ -67,6 +67,7 @@ app.define('plugins://validator',function(require, exports, module) {
 			span.className = prefix;
 			span.innerHTML = msg;
 			parent.lastChild == ele ? parent.appendChild(span, ele) : parent.insertBefore(span, ele.nextSibling);
+			span = null;
 		},
 
 		//构建提示信息
