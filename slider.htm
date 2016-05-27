@@ -1,0 +1,65 @@
+<!doctype html>
+<html>
+<head>
+<base href="http://localhost/sujui/" />
+<meta charset="utf-8">
+<title>无标题文档</title>
+<style>
+body,div,ul,li{margin:0;padding:0;}
+ul{list-style-type:none;}
+body{background:#000;text-align:center;font:12px/20px Arial;}
+#slider{position:relative;width:492px;height:172px;background:#fff;border-radius:5px;border:8px solid #fff;margin:10px auto; position:absolute; left:0;top:0}
+#slider .list{position:relative;width:490px;height:170px;overflow:hidden;border:1px solid #ccc;}
+#slider .list .slider-fix{ width:490px; height:170px; position:absolute; left:0; top:0; z-index:0}
+#slider .list li{position:absolute;top:0;left:0;width:490px;height:170px;opacity:0;filter:alpha(opacity=0); z-index:1; display:none}
+#slider .list li.current{opacity:1;filter:alpha(opacity=100); display:block}
+#slider .count{position:absolute;right:0;bottom:5px; z-index:2}
+#slider .count li{color:#fff;float:left;width:20px;height:20px;cursor:pointer;margin-right:5px;overflow:hidden;background:#F90;opacity:0.7;filter:alpha(opacity=70);border-radius:20px;}
+#slider .count li.current{color:#fff;opacity:1;filter:alpha(opacity=100);font-weight:700;background:#f60;}
+#tmp{width:100px;height:100px;background:red;position:absolute;}
+</style>
+
+</head>
+
+<body>
+<div id="slider" data-test="1">
+    <ul class="list">
+        <li class="current"><img src="upload/01.jpg" width="490" height="170" /></li>
+        <li><img src="upload/02.jpg" width="490" height="170" /></li>
+        <li><img src="upload/03.jpg" width="490" height="170" /></li>
+        <li><img src="upload/04.jpg" width="490" height="170" /></li>
+        <li><img src="upload/05.jpg" width="490" height="170" /></li>
+    </ul>
+</div>
+<script src="static/js/sujui.js"></script>
+<script src="static/js/extend.dom.js"></script>
+<script src="static/js/extend.animate.js"></script>
+<script src="static/js/extend.animate.tween.js"></script>
+<script src="static/js/plugins.slider.js"></script>
+
+
+<script>
+app.use(['extend://dom','extend://animate','extend://animate.tween','plugins://slider'],function($,animate,tween,slider){
+	var ele=$('#slider')[0]
+	var css={'width':'600px','height':'500px'}
+	slider()
+	var easing=tween.Circ.easeInOut
+
+	var sss=$('#slider').animate({'left':200,'top':200},500,easing,function(){
+		console.log(this)
+	})
+
+	
+	
+	
+
+})
+
+
+
+
+
+</script>
+
+</body>
+</html>
