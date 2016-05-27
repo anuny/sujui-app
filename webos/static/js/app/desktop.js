@@ -29,7 +29,14 @@ define(function(require, exports, module) {
 				hoverStyle=config.hoverStyle||'current',
 				clickStyle=config.clickStyle||'click',
 				dbclickStyle=config.dblclickStyle||'dbclick',
+				rightclickStyle=config.rightclickStyle||'dbclick',
 				n=parseInt(desktopIcon.outerHeight()/height);
+				function Click(){
+				}
+				function dblClick(){
+				}
+				function rightClick(){
+				}
 				icons.each(function(i) {
 					var thisIco=$(this),
 					thisLeft=parseInt(i/n)*width+15,
@@ -44,14 +51,20 @@ define(function(require, exports, module) {
 					},function(){
 						thisIco.removeClass(hoverStyle)
 					})
-					.on('click',function(){
-						thisIco.addClass(clickStyle).siblings('li').removeClass(clickStyle)
+					.on('mousedown',function(e){
+						thisIco.addClass(clickStyle).siblings('li').removeClass(clickStyle)	;
+						if(1 == e.which){ 
+						   Click()
+						}else if(3 == e.which){
+							rightClick()
+						}; 
 					})
 					.on('dblclick',function(){
-						thisIco.addClass(dbclickStyle).siblings('li').removeClass(dbclickStyle)
+						thisIco.addClass(dbclickStyle).siblings('li').removeClass(dbclickStyle);
+						dblClick();
 					});
 					ELEMENT.desktop.on('mouseup',function(){
-						icons.removeClass(clickStyle).removeClass(dbclickStyle)
+						icons.removeClass(clickStyle).removeClass(dbclickStyle);
 					})
 				});
 			},
@@ -62,6 +75,7 @@ define(function(require, exports, module) {
 				iconMY = 0,
 				minZindex = 1;
 				ico.onmousedown = function(event){
+					if(3 == event.which) return ;
 					var scrollTop = document.documentElement.scrollTop||document.body.scrollTop;
 					var scrollLeft = document.documentElement.scrollLeft||document.body.scrollLeft;
 					ico.style.zIndex = minZindex++;

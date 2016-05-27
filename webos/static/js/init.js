@@ -1,13 +1,17 @@
 seajs.config({
+	base:'http://localhost/sujui.app/webos/',
 	paths: {
-		'lib': 'http://localhost/webos/static/js/lib',
-		'app': 'http://localhost/webos/static/js/app'
+		'lib': 'static/js/lib',
+		'app': 'static/js/app'
 	},
 	alias: {
 		'jquery': 'lib/jquery/jquery-1.8.3.min'
 	}
 });
 seajs.use(['jquery'],function() {
+	$(document).bind("contextmenu",function(e){
+		return false;
+	});
 	seajs.use('app/desktop',function(desktop) {
 		desktop.icons({
 			width:100,
@@ -16,7 +20,8 @@ seajs.use(['jquery'],function() {
 			animateSpeed:300,
 			hoverStyle:'current',
 			clickStyle:'click',
-			dbclickStyle:'dbclick'
+			dbclickStyle:'dbclick',
+			rightclickStyle:'click'
 		});
 		desktop.background()
 	})
